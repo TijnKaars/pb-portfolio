@@ -448,6 +448,57 @@ nav.scrolled { border-bottom-color: rgba(0,85,254,.2); }
 }
 .reveal.in .trait-bar-fill { width: var(--pct); }
 
+/* MBTI cards */
+.mbti-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+.mbti-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: .75rem;
+  transition: border-color .3s, background .3s;
+}
+.mbti-card:hover {
+  background: rgba(0,85,254,0.07);
+  border-color: rgba(0,85,254,0.3);
+}
+.mbti-card img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+.mbti-card-label {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+.mbti-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+.mbti-card-desc {
+  font-size: .8rem;
+  color: var(--text-sub);
+  line-height: 1.6;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .mbti-cards { grid-template-columns: 1fr; }
+}
+
 /* Testimonials */
 .testimonials-col { display: flex; flex-direction: column; gap: 1rem; }
 .testimonial-card {
@@ -868,6 +919,27 @@ footer {
               <div class="trait-bar-track">
                 <div class="trait-bar-fill" style="--pct:83%;background:#d45d5d"></div>
               </div>
+            </div>
+          </div>
+
+          <div class="mbti-cards">
+            <div class="mbti-card">
+              <span class="mbti-card-label">Persoonlijkheid</span>
+              <img src="Personality.Commander.svg" alt="De Commandant">
+              <p class="mbti-card-title">De Commandant</p>
+              <p class="mbti-card-desc">Commandanten zijn gedurfd, creatief en wilskrachtig — ze vinden altijd een weg vooruit, of ze maken er zelf een.</p>
+            </div>
+            <div class="mbti-card">
+              <span class="mbti-card-label">Rol</span>
+              <img src="Role.Analyst.svg" alt="De Analist">
+              <p class="mbti-card-title">De Analist</p>
+              <p class="mbti-card-desc">Analisten omarmen rationaliteit en zijn sterk in intellectuele vraagstukken. Onafhankelijk, open van geest en gedreven door logica.</p>
+            </div>
+            <div class="mbti-card">
+              <span class="mbti-card-label">Strategie</span>
+              <img src="Strategy.People.Master.svg" alt="People Mastery">
+              <p class="mbti-card-title">People Mastery</p>
+              <p class="mbti-card-desc">People Masters zoeken sociale verbinding, communiceren met gemak en zijn zelfverzekerd — zowel in groepen als in leiderschapsrollen.</p>
             </div>
           </div>
         </div>

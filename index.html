@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tijn Kaars — Strateeg &amp; Digital Marketeer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ======== RESET ======== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ======== VARIABLES ======== */
+:root {
+  --bg:          #0a0a0f;
+  --bg-card:     #111118;
+  --bg-hover:    #16161f;
+  --bg-pill:     #1a1a26;
+  --text:        #ffffff;
+  --text-sub:    #8888a0;
+  --text-dim:    #555568;
+  --blue:        #4f8ef7;
+  --blue-dim:    rgba(79,142,247,0.12);
+  --blue-border: rgba(79,142,247,0.25);
+  --border:      rgba(255,255,255,0.06);
+  --border-md:   rgba(255,255,255,0.10);
+  --font-head:   'Bricolage Grotesque', sans-serif;
+  --font-body:   'Outfit', sans-serif;
+}
+
+/* ======== BASE ======== */
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--font-head); }
+a { text-decoration: none; color: inherit; }
+strong { color: var(--text); font-weight: 600; }
+
+/* ======== SCROLL PROGRESS ======== */
+#scroll-bar {
+  position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+  background: linear-gradient(90deg, #4f8ef7, #7bc8ff);
+  z-index: 9999; pointer-events: none;
+}
+
+/* ======== LAYOUT ======== */
+.section { padding: 7rem 5vw; }
+.section-inner { max-width: 1280px; margin: 0 auto; }
+.section-header { max-width: 680px; margin-bottom: 3.5rem; }
+.section-raised {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ======== SECTION HEADER PATTERN ======== */
+.section-label {
+  display: block;
+  font-size: .75rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 1rem;
+}
+.section-divider {
+  width: 0; height: 2px;
+  background: var(--blue); margin-bottom: 1.5rem;
+  transition: width .7s .25s cubic-bezier(.22,1,.36,1);
+}
+.reveal.in .section-divider { width: 56px; }
+.section-title {
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.02em; margin-bottom: 1.2rem;
+}
+.title-dim   { color: var(--text-sub); }
+.title-bright { color: var(--text); }
+.section-sub {
+  font-size: .95rem; color: var(--text-sub);
+  line-height: 1.75; max-width: 520px;
+}
+
+/* ======== REVEAL ======== */
+.reveal {
+  opacity: 0; transform: translateY(22px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+.reveal.in { opacity: 1; transform: none; }
+
+/* ======== CARDS ======== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.5rem;
+  transition: border-color .25s, transform .25s;
+}
+.card:hover { border-color: var(--border-md); transform: translateY(-2px); }
+
+/* ======== BUTTONS ======== */
+.btn-primary {
+  display: inline-block;
+  background: var(--blue); color: #fff;
+  border: none; border-radius: 8px;
+  padding: .7rem 1.6rem;
+  font-family: var(--font-body);
+  font-weight: 600; font-size: .875rem;
+  cursor: pointer;
+  transition: opacity .2s, transform .15s;
+}
+.btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+.btn-primary:active { transform: scale(.98); }
+
+.btn-ghost {
+  display: inline-block;
+  background: transparent; color: var(--text-sub);
+  border: 1px solid var(--border-md); border-radius: 8px;
+  padding: .7rem 1.6rem;
+  font-family: var(--font-body);
+  font-weight: 500; font-size: .875rem;
+  cursor: pointer;
+  transition: color .2s, border-color .2s, transform .15s;
+}
+.btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+.btn-ghost:active { transform: scale(.98); }
+
+/* ======== NAV ======== */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000; height: 64px;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: border-bottom-color .3s;
+}
+nav.scrolled { border-bottom-color: rgba(79,142,247,.15); }
+.nav-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 5vw; height: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--font-head);
+  font-weight: 800; font-size: 1.2rem;
+  color: var(--text); letter-spacing: -0.02em;
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  font-size: .8rem; font-weight: 500;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--text-sub); position: relative;
+  transition: color .2s;
+}
+.nav-links a::after {
+  content: ''; position: absolute;
+  bottom: -2px; left: 0; width: 0; height: 1px;
+  background: var(--blue);
+  transition: width .25s cubic-bezier(.22,1,.36,1);
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { width: 100%; }
+.nav-toggle {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: pointer; padding: .3rem;
+}
+.nav-toggle span {
+  display: block; width: 22px; height: 1.5px;
+  background: var(--text-sub); transition: transform .3s, opacity .3s;
+}
+
+/* ======== HERO ======== */
+#home {
+  min-height: 100dvh;
+  display: flex; align-items: center;
+  padding-top: 64px;
+}
+.hero-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 4rem 5vw;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 5rem; align-items: center;
+  width: 100%;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--bg-pill); border: 1px solid var(--border-md);
+  border-radius: 999px; padding: .35rem .9rem;
+  font-size: .75rem; color: var(--text-sub);
+  margin-bottom: 1.8rem;
+}
+.badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--blue); flex-shrink: 0;
+  animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot {
+  0%,100% { box-shadow: 0 0 0 0 rgba(79,142,247,.4); }
+  50%      { box-shadow: 0 0 0 4px rgba(79,142,247,0); }
+}
+.hero-eyebrow {
+  font-size: .82rem; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-sub); margin-bottom: 1rem; min-height: 1.2em;
+}
+.hero-name {
+  font-size: clamp(4rem, 10vw, 9rem);
+  font-weight: 800; line-height: 0.92;
+  letter-spacing: -0.03em; color: var(--text);
+  margin-bottom: 1.8rem;
+  animation: nameBreathe .9s .35s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes nameBreathe {
+  0%   { letter-spacing: -.06em; opacity: 0; }
+  60%  { letter-spacing: -.01em; }
+  100% { letter-spacing: -.03em; opacity: 1; }
+}
+.hero-quote {
+  font-size: .95rem; font-style: italic;
+  color: var(--text-sub); line-height: 1.7;
+  max-width: 480px; margin-bottom: 1.2rem;
+  border-left: 2px solid var(--blue-border); padding-left: 1rem;
+  opacity: 0; transform: translateY(28px);
+  animation: slideUp .7s .55s cubic-bezier(.22,1,.36,1) both;
+}
+.hero-desc {
+  font-size: .95rem; color: var(--text-sub);
+  line-height: 1.75; max-width: 480px; margin-bottom: 2rem;
+  opacity: 0; transform: translateY(28px);
+  animation: slideUp .7s .72s cubic-bezier(.22,1,.36,1) both;
+}
+.hero-cta {
+  display: flex; gap: .75rem; flex-wrap: wrap;
+  opacity: 0; transform: translateY(28px);
+  animation: slideUp .7s .9s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: none; }
+}
+.hero-photo-wrap {
+  opacity: 0; transform: translateY(28px);
+  animation: slideUp .9s .2s cubic-bezier(.22,1,.36,1) both;
+}
+.hero-photo-wrap img {
+  width: 100%; height: 560px;
+  object-fit: cover; object-position: center top;
+  border-radius: 0;
+  box-shadow: 0 0 60px rgba(79,142,247,0.08);
+  display: block;
+}
+.hero-caption {
+  font-size: .72rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-dim);
+  margin-top: .75rem; text-align: center;
+}
+
+/* ======== MARQUEE ======== */
+.marquee-wrapper {
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: .9rem 0;
+}
+.marquee-track {
+  display: flex; gap: 2.5rem;
+  animation: marquee 24s linear infinite;
+  width: max-content; white-space: nowrap;
+  font-size: .78rem; color: var(--text-dim);
+  letter-spacing: .12em; text-transform: uppercase;
+}
+.marquee-sep { color: var(--blue); opacity: .5; }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ======== WIE BEN IK ======== */
+.wiebeik-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 5rem; align-items: start;
+}
+.wiebeik-text p {
+  font-size: .95rem; color: var(--text-sub);
+  line-height: 1.8; margin-bottom: 1.2rem;
+}
+
+/* Trait cards — asymmetric bento */
+.trait-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem; margin-top: 2.5rem;
+}
+.trait-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.2rem 1.3rem;
+  transition: border-color .25s, background .25s;
+  transform-style: preserve-3d;
+  cursor: default;
+}
+.trait-card:first-child { grid-column: span 2; }
+.trait-card:hover {
+  border-color: var(--blue-border);
+  background: var(--bg-hover);
+}
+.trait-num {
+  display: block;
+  font-size: .65rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: .45rem;
+}
+.trait-title {
+  font-size: 1rem; font-weight: 700;
+  color: var(--text); margin-bottom: .35rem;
+}
+.trait-desc { font-size: .82rem; color: var(--text-sub); line-height: 1.6; }
+
+/* Personality box */
+.personality-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 2rem;
+  margin-top: 2rem;
+  animation: borderPulse 4s ease-in-out infinite;
+}
+@keyframes borderPulse {
+  0%,100% { border-color: var(--border); }
+  50%      { border-color: rgba(79,142,247,.2); }
+}
+.personality-box h3 {
+  font-size: 1rem; font-weight: 700;
+  color: var(--text); margin-bottom: .75rem;
+}
+.personality-box p {
+  font-size: .88rem; color: var(--text-sub); line-height: 1.75;
+}
+.belbin {
+  margin-top: 1.5rem; padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Testimonials */
+.testimonials-col { display: flex; flex-direction: column; gap: 1rem; }
+.testimonial-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.5rem;
+  transition: border-color .2s, transform .25s;
+}
+.testimonial-card:hover { border-color: var(--border-md); transform: translateY(-3px); }
+.testimonial-quote {
+  font-size: .87rem; color: var(--text-sub);
+  line-height: 1.7; font-style: italic;
+  margin-bottom: 1.2rem;
+}
+.testimonial-name { font-weight: 600; font-size: .9rem; color: var(--text); }
+.testimonial-role { font-size: .78rem; color: var(--text-sub); margin-top: .2rem; }
+
+/* ======== WAT KAN IK ======== */
+/* Drive cards */
+.drive-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem; margin-bottom: 3.5rem;
+}
+.drive-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.5rem;
+  position: relative; overflow: hidden;
+  transition: transform .25s, box-shadow .25s;
+}
+.drive-card::before {
+  content: '';
+  position: absolute; bottom: 0; left: -100%; right: 0; height: 2px;
+  background: var(--blue);
+  transition: left .3s cubic-bezier(.22,1,.36,1);
+}
+.drive-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(79,142,247,.08); }
+.drive-card:hover::before { left: 0; }
+.drive-num {
+  font-size: 2rem; font-weight: 800;
+  color: var(--border); line-height: 1;
+  margin-bottom: .75rem;
+  transition: color .25s;
+}
+.drive-card:hover .drive-num { color: var(--blue); }
+.drive-title {
+  font-size: 1rem; font-weight: 700;
+  color: var(--text); margin-bottom: .5rem;
+}
+.drive-desc { font-size: .85rem; color: var(--text-sub); line-height: 1.65; }
+
+/* CE Skills */
+.skills-list { display: flex; flex-direction: column; }
+.skill-row {
+  border-top: 1px solid var(--border);
+  padding: 1.8rem 1.2rem;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2.5rem; align-items: start;
+  transition: background .25s, padding-left .25s;
+  cursor: default;
+}
+.skill-row:last-child { border-bottom: 1px solid var(--border); }
+.skill-row:hover { background: rgba(79,142,247,.03); padding-left: 1.8rem; }
+.skill-label-text {
+  font-size: .95rem; font-weight: 700; color: var(--text);
+}
+.skill-label-tag {
+  display: block; font-size: .68rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--blue); margin-top: .3rem;
+}
+.skill-content {
+  font-size: .88rem; color: var(--text-sub); line-height: 1.78;
+}
+
+/* ======== WAT WIL IK ======== */
+.watwil-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 5rem; align-items: start;
+}
+.watwil-block { margin-bottom: 2.5rem; }
+.watwil-block h3 {
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--text); margin-bottom: .9rem;
+}
+.watwil-block p {
+  font-size: .92rem; color: var(--text-sub);
+  line-height: 1.8; margin-bottom: 1rem;
+}
+.watwil-block p em { color: var(--text); font-style: italic; }
+
+.expect-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 2rem;
+  position: sticky; top: 96px;
+}
+.expect-box-label {
+  font-size: .7rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-sub); margin-bottom: 1.5rem; display: block;
+}
+.expect-list { list-style: none; }
+.expect-list li {
+  font-size: .88rem; color: var(--text-sub);
+  padding: .6rem 0; border-top: 1px solid var(--border);
+  display: flex; gap: .75rem; align-items: flex-start;
+  opacity: 0; transform: translateX(-10px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.expect-list li::before { content: '→'; color: var(--blue); font-weight: 700; flex-shrink: 0; }
+.reveal.in .expect-list li:nth-child(1) { opacity:1; transform:none; transition-delay:.15s; }
+.reveal.in .expect-list li:nth-child(2) { opacity:1; transform:none; transition-delay:.22s; }
+.reveal.in .expect-list li:nth-child(3) { opacity:1; transform:none; transition-delay:.29s; }
+.reveal.in .expect-list li:nth-child(4) { opacity:1; transform:none; transition-delay:.36s; }
+.reveal.in .expect-list li:nth-child(5) { opacity:1; transform:none; transition-delay:.43s; }
+.reveal.in .expect-list li:nth-child(6) { opacity:1; transform:none; transition-delay:.50s; }
+.reveal.in .expect-list li:nth-child(7) { opacity:1; transform:none; transition-delay:.57s; }
+
+/* ======== CONTACT ======== */
+.cta-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 5rem 4rem;
+  text-align: center; position: relative; overflow: hidden;
+}
+.cta-block::before {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 400px; height: 200px;
+  background: radial-gradient(ellipse, rgba(79,142,247,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-block > * { position: relative; z-index: 1; }
+.cta-block h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800; letter-spacing: -0.02em;
+  color: var(--text); margin-bottom: 1rem;
+}
+.cta-block p {
+  font-size: .95rem; color: var(--text-sub);
+  line-height: 1.75; max-width: 460px;
+  margin: 0 auto 2.5rem;
+}
+.social-links {
+  display: flex; gap: 1rem;
+  justify-content: center; flex-wrap: wrap;
+}
+.social-btn {
+  display: inline-flex; align-items: center; gap: .6rem;
+  padding: .75rem 1.6rem;
+  background: var(--bg-pill);
+  border: 1px solid var(--border-md);
+  border-radius: 8px;
+  font-size: .88rem; font-weight: 500; color: var(--text-sub);
+  position: relative; overflow: hidden;
+  transition: color .2s, border-color .2s, transform .2s;
+}
+.social-btn::before {
+  content: '';
+  position: absolute; top: 0; left: -100%; bottom: 0; width: 100%;
+  background: rgba(79,142,247,.08);
+  transition: left .3s cubic-bezier(.22,1,.36,1);
+}
+.social-btn:hover { color: var(--text); border-color: var(--blue-border); transform: translateY(-2px); }
+.social-btn:hover::before { left: 0; }
+.social-btn svg { width: 18px; height: 18px; flex-shrink: 0; position: relative; z-index: 1; }
+.social-btn span { position: relative; z-index: 1; }
+
+/* ======== FOOTER ======== */
+.footer-wrap {
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 5vw;
+}
+footer {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: .82rem; color: var(--text-dim);
+}
+.footer-name {
+  font-family: var(--font-head);
+  font-weight: 700; color: var(--blue); font-size: .9rem;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 1024px) {
+  .wiebeik-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .watwil-grid  { grid-template-columns: 1fr; gap: 3rem; }
+  .expect-box   { position: static; }
+}
+@media (max-width: 768px) {
+  .section          { padding: 4rem 5vw; }
+  .hero-inner       { grid-template-columns: 1fr; gap: 2.5rem; padding: 2rem 5vw; }
+  .hero-photo-wrap  { order: -1; }
+  .hero-photo-wrap img { height: 300px; }
+  .hero-name        { font-size: clamp(3.5rem, 16vw, 6rem); }
+  .drive-grid       { grid-template-columns: 1fr; }
+  .skill-row        { grid-template-columns: 1fr; gap: 1rem; }
+  .nav-links        { display: none; }
+  .nav-toggle       { display: flex; }
+  .cta-block        { padding: 3rem 2rem; }
+}
+@media (max-width: 600px) {
+  .trait-grid { grid-template-columns: 1fr; }
+  .trait-card:first-child { grid-column: span 1; }
+  .hero-cta { flex-direction: column; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+}
+
+/* ======== ACCESSIBILITY ======== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="scroll-bar"></div>
+
+<!-- ======== NAV ======== -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo">TK</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#wie-ben-ik">Wie ben ik?</a></li>
+      <li><a href="#wat-kan-ik">Wat kan ik?</a></li>
+      <li><a href="#wat-wil-ik">Wat wil ik?</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="btn-primary" style="font-size:.8rem;padding:.5rem 1.1rem;">Contact</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ======== HERO ======== -->
+<section id="home">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Student Digital Marketing &middot; 2025
+      </div>
+      <p class="hero-eyebrow" id="eyebrow"></p>
+      <h1 class="hero-name">TIJN<br>KAARS</h1>
+      <p class="hero-quote">"Strategie zonder ambitie is een plan. Ambitie zonder strategie is een droom."</p>
+      <p class="hero-desc">
+        22 jaar, student Commerciële Economie (Digital Marketing) aan de
+        <strong>Hogeschool van Amsterdam</strong>.
+        Stage gelopen bij <strong>TBWA\NEBOKO</strong> op de strategieafdeling.
+        Gedreven door data, sport en de wil om elke dag beter te worden.
+      </p>
+      <div class="hero-cta">
+        <a href="#wie-ben-ik" class="btn-primary" id="cta-main">KOM MEER TE WETEN</a>
+        <a href="#contact" class="btn-ghost">Neem contact op</a>
+      </div>
+    </div>
+    <div class="hero-photo-wrap">
+      <img src="Ijskoud.jpg" alt="Tijn Kaars — Alpen, 2025">
+      <p class="hero-caption">Alpen, 2025</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======== MARQUEE ======== -->
+<div class="marquee-wrapper">
+  <div class="marquee-track">
+    <span>McDonald's</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Odido</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Save the Children</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>TBWA\NEBOKO</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Mitsuba</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Strategie</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Digital Marketing</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Analytics</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Hogeschool van Amsterdam</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>McDonald's</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Odido</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Save the Children</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>TBWA\NEBOKO</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Mitsuba</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Strategie</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Digital Marketing</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Analytics</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+    <span>Hogeschool van Amsterdam</span><span class="marquee-sep">&nbsp;&middot;&nbsp;</span>
+  </div>
+</div>
+
+<!-- ======== WIE BEN IK ======== -->
+<section id="wie-ben-ik" class="section">
+  <div class="section-inner">
+
+    <div class="section-header reveal">
+      <span class="section-label">01 — Wie ben ik?</span>
+      <div class="section-divider"></div>
+      <h2 class="section-title">
+        <span class="title-dim">Meer dan alleen</span><br>
+        <span class="title-bright">een CV.</span>
+      </h2>
+    </div>
+
+    <div class="wiebeik-grid">
+
+      <!-- Left: tekst + trait cards + personality -->
+      <div>
+        <div class="wiebeik-text reveal">
+          <p>Mijn naam is <strong>Tijn Kaars</strong>, 22 jaar oud en student Commerciële Economie met specialisatie Digital Marketing aan de Hogeschool van Amsterdam. Ambitieus, analytisch en competitief — dat zijn woorden die mij goed omschrijven, én die ik terugzie in zowel sport als studie.</p>
+          <p>Sport is een rode draad in mijn leven. Als aanvoerder van mijn voetbalteam heb ik geleerd dat resultaten niet vanzelf komen: je hebt discipline, focus en een scherpe instelling nodig. Die mentaliteit neem ik mee naar de werkvloer. Ik wil niet alleen meedoen — ik wil het goed doen.</p>
+          <p>Tijdens mijn stage bij <strong>TBWA\NEBOKO</strong>, een van de grootste reclamebureaus van Nederland, heb ik de strategieafdeling van binnenuit meegemaakt. Van consumenteninzicht naar positionering, van briefing naar creatieve strategie — het was een bevestiging dat dit het vakgebied is waar ik wil groeien.</p>
+          <p><strong>Mijn doel?</strong> Doorgroeien als strateeg in de wereld van marketing, met een focus op de sportsector.</p>
+        </div>
+
+        <div class="trait-grid">
+          <div class="trait-card reveal">
+            <span class="trait-num">01</span>
+            <div class="trait-title">Ambitieus &amp; doelgericht</div>
+            <div class="trait-desc">Ik stel doelen en werk er systematisch naartoe. Stilstand voelt als achteruitgang.</div>
+          </div>
+          <div class="trait-card reveal">
+            <span class="trait-num">02</span>
+            <div class="trait-title">Analytisch ingesteld</div>
+            <div class="trait-desc">Ik redeneer vanuit feiten en data. Onderbouwen is een vanzelfsprekendheid.</div>
+          </div>
+          <div class="trait-card reveal">
+            <span class="trait-num">03</span>
+            <div class="trait-title">Competitief &amp; gedreven</div>
+            <div class="trait-desc">De wil om te presteren motiveert mij om het maximale uit elke situatie te halen.</div>
+          </div>
+          <div class="trait-card reveal">
+            <span class="trait-num">04</span>
+            <div class="trait-title">Sportmentaliteit</div>
+            <div class="trait-desc">Discipline en consistentie — geleerd op het sportveld, toegepast in alles wat ik doe.</div>
+          </div>
+          <div class="trait-card reveal">
+            <span class="trait-num">05</span>
+            <div class="trait-title">Strategisch denker</div>
+            <div class="trait-desc">Ik zie het grotere plaatje en vertaal inzichten naar concrete, haalbare acties.</div>
+          </div>
+          <div class="trait-card reveal">
+            <span class="trait-num">06</span>
+            <div class="trait-title">Leergierig</div>
+            <div class="trait-desc">Elke ervaring is een kans om beter te worden. Ik stel vragen en ga altijd een laag dieper.</div>
+          </div>
+        </div>
+
+        <div class="personality-box reveal" style="margin-top:2rem;">
+          <h3>Mijn persoonlijkheid — ESTP: De Ondernemer</h3>
+          <p>Uit de 16Personalities-test blijkt dat ik een ESTP ben: extravert, observerend, rationeel en spontaan. Ik ben energiek, actiegericht en ga liever meteen aan de slag dan eindeloos te plannen. Ik leer door te doen, niet door te lezen. Geef mij een concreet probleem en ik ben in mijn element. Ik ben direct in mijn communicatie, sociaal van nature en ik pik snel op wat er speelt in een ruimte of team. Dat maakt mij een natuurlijke verbinder en groepsleider, zonder dat ik daar bewust naar zoek. Mijn valkuil? Ongeduld en soms te impulsief handelen. Maar ook dat herken ik — en ik werk er bewust aan.</p>
+          <div class="belbin">
+            <h3>Belbin-rollen</h3>
+            <p>Mijn twee dominante Belbin-rollen zijn de <strong>Vormer</strong> en de <strong>Bedrijfsman</strong>. De Vormer geeft richting, daagt uit en houdt het tempo hoog. De Bedrijfsman zet plannen om in concrete acties. Daarnaast ben ik ook de <strong>Brononderzoeker</strong>: ik denk buiten het kader, kom met nieuwe ideeën en leg snel verbanden.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: testimonials -->
+      <div>
+        <div style="position:sticky;top:96px;">
+          <span class="section-label" style="margin-bottom:1.5rem;">Wat anderen zeggen</span>
+          <div class="testimonials-col">
+            <div class="testimonial-card reveal">
+              <p class="testimonial-quote">"Tijn viel direct op door zijn proactieve houding, opgewekte persoonlijkheid en heldere manier van communiceren. Hij werkt snel, is inhoudelijk sterk en levert zijn werk altijd volledig en doordacht aan. Samenwerken met hem was dan ook een oprecht genot. Met deze instelling, energie en kwaliteiten gaat hij ongetwijfeld heel ver komen."</p>
+              <div class="testimonial-name">Wendeline Sassen</div>
+              <div class="testimonial-role">Strategy Director, TBWA\NEBOKO</div>
+            </div>
+            <div class="testimonial-card reveal">
+              <p class="testimonial-quote">"Tijn is een geweldige student digital marketing. Zijn leergierigheid en kritische houding zorgen ervoor dat hij tot in detail is voorbereid om digital marketing vraagstukken tot een goed einde te brengen. Potentiële werkgevers mogen heel blij zijn als ze Tijn voor zich weten te winnen."</p>
+              <div class="testimonial-name">Lex Beijersbergen</div>
+              <div class="testimonial-role">Docent Digital Marketing, HvA</div>
+            </div>
+            <div class="testimonial-card reveal">
+              <p class="testimonial-quote">"Tijn viel tijdens zijn stage bij TBWA\NEBOKO op door zijn volwassen en professionele houding. Hij pakte werkzaamheden zelfstandig en vlot op en leverde inhoudelijk sterk werk. Ook in de samenwerking was hij prettig en betrouwbaar. Kortom, een aanvulling voor het team."</p>
+              <div class="testimonial-name">Julia van Nijkerk</div>
+              <div class="testimonial-role">Strategist &amp; stagebegeleider, TBWA\NEBOKO</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ======== WAT KAN IK ======== -->
+<section id="wat-kan-ik" class="section section-raised">
+  <div class="section-inner">
+
+    <div class="section-header reveal">
+      <span class="section-label">02 — Wat kan ik?</span>
+      <div class="section-divider"></div>
+      <h2 class="section-title">
+        <span class="title-dim">Vaardigheden die</span><br>
+        <span class="title-bright">resultaat opleveren.</span>
+      </h2>
+      <p class="section-sub">Bij TBWA\NEBOKO ontdekte ik dat presteren niet alleen over talent gaat — het vraagt systematisch werken, analyse en de bereidheid om te blijven verbeteren.</p>
+    </div>
+
+    <!-- Drive cards -->
+    <div class="drive-grid reveal">
+      <div class="drive-card">
+        <div class="drive-num">01</div>
+        <div class="drive-title">Winnen &amp; presteren</div>
+        <div class="drive-desc">De drive om te winnen zit diep. Of het nu een wedstrijd, een analyse of een presentatie is — ik ga voor het beste resultaat.</div>
+      </div>
+      <div class="drive-card">
+        <div class="drive-num">02</div>
+        <div class="drive-title">Analytisch denken</div>
+        <div class="drive-desc">Ik hou van data die een verhaal vertelt. Ik zoom in op de details zonder het grotere plaatje uit het oog te verliezen.</div>
+      </div>
+      <div class="drive-card">
+        <div class="drive-num">03</div>
+        <div class="drive-title">Strategie &amp; impact</div>
+        <div class="drive-desc">Ik wil werk maken dat ergens voor staat. Campagnes die niet alleen opvallen, maar ook echt verschil maken voor een merk.</div>
+      </div>
+    </div>
+
+    <!-- CE Skills -->
+    <div class="skills-list reveal">
+      <div class="skill-row">
+        <div>
+          <div class="skill-label-text">Kritisch denken</div>
+          <span class="skill-label-tag">CE-skill</span>
+        </div>
+        <div class="skill-content">
+          Voor McDonald's Nederland voerde ik maandelijks een concurrentieanalyse uit op zeven merken — waaronder Burger King, KFC en Domino's — verdeeld over kanalen als tv, radio, social media en digital. Na één uitleg pakte ik dit zelfstandig op. Ik stelde mezelf elke keer de vraag: <strong>wat is hier strategisch interessant aan en wat zegt dit over hun positionering?</strong> Mijn begeleider gaf aan dat mijn analyses consistent, goed onderbouwd en nauwelijks bij te sturen waren.
+          <br><br>
+          Een tweede voorbeeld is het marktonderzoek voor Mitsuba, dat ik samen met een collega-stagiair binnen één werkdag moest opleveren. De opdracht was open: "we need relevant information." Ik doorvroeg kritisch, bepaalde zelf de scope en maakte bewuste keuzes over wat wél en niet onderzocht werd.
+        </div>
+      </div>
+      <div class="skill-row">
+        <div>
+          <div class="skill-label-text">Samenwerken</div>
+          <span class="skill-label-tag">CE-skill</span>
+        </div>
+        <div class="skill-content">
+          Vrijwel al mijn projecten bij TBWA\NEBOKO voerde ik uit samen met Mick Beer, de andere strategie-stagiair. Ik merkte dat ik in het begin te veel op mijn eigen deel gefocust was — waardoor het grotere geheel eerst wat onoverzichtelijk bleef. Gaandeweg nam ik meer initiatief in het samenbrengen van onze analyses.
+          <br><br>
+          Dat marktonderzoek heeft mede bijgedragen aan het <strong>binnenhalen van Mitsuba als klant</strong>. Bij de concurrentieanalyse voor Odido stelde ik een duidelijke taakverdeling voor en zorgde ik dat onze bevindingen op elkaar aansloten. De klant reageerde met: "Enorme complimenten, dit is het beste overzicht dat ik in tijden heb gehad."
+        </div>
+      </div>
+      <div class="skill-row">
+        <div>
+          <div class="skill-label-text">Commercieel bewustzijn</div>
+          <span class="skill-label-tag">CE-skill</span>
+        </div>
+        <div class="skill-content">
+          Voor Save the Children selecteerde ik beeldmateriaal voor een tv-commercial, met als doel empathie op te wekken en donaties te genereren. Ik maakte bewuste keuzes op basis van emotionele impact én commercieel doel. <strong>Meerdere beelden uit mijn selectie zijn uiteindelijk gebruikt in de definitieve tv-commercial.</strong>
+          <br><br>
+          Ik leerde dat data verzamelen onvoldoende is — pas als je de analyse opbouwt vanuit de informatiebehoefte van de klant, ontstaat er echte strategische waarde.
+        </div>
+      </div>
+      <div class="skill-row">
+        <div>
+          <div class="skill-label-text">Aanpassings­vermogen</div>
+          <span class="skill-label-tag">CE-skill</span>
+        </div>
+        <div class="skill-content">
+          De concurrentieanalyse voor Save the Children kende geen vast eindontwerp bij de start. In vier opeenvolgende versies veranderde de scope telkens: van campagnegericht naar thematisch, van drie maanden naar een jaar, van descriptief naar strategisch verdiepend. Ik leerde om minder vast te houden aan de oorspronkelijke afbakening.
+          <br><br>
+          Een ander moment: het schrijven van klantcommunicatie voor McDonald's. Ik moest binnen <strong>een half uur</strong> een scherpe Engelstalige e-mail opstellen voor 42 ontvangers — inclusief de CMO van McDonald's Nederland. De feedback: mijn mails waren "zorgvuldig, strak en to the point."
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======== WAT WIL IK ======== -->
+<section id="wat-wil-ik" class="section">
+  <div class="section-inner">
+
+    <div class="section-header reveal">
+      <span class="section-label">03 — Wat wil ik?</span>
+      <div class="section-divider"></div>
+      <h2 class="section-title">
+        <span class="title-dim">Niet de grootste</span><br>
+        <span class="title-bright">organisatie. De juiste.</span>
+      </h2>
+    </div>
+
+    <div class="watwil-grid">
+      <div>
+        <div class="watwil-block reveal">
+          <h3>Uitdagingen &amp; inzichten</h3>
+          <p>TBWA\NEBOKO is een indrukwekkend bureau. Groot, professioneel en vol talent. En juist dat maakte het ook soms lastig. Na de eerste maanden begon ik te merken dat de opdrachten die ik uitvoerde een vast patroon kregen. <strong>Maar daarmee verdween ook de uitdaging.</strong></p>
+          <p>Ik ben iemand die energie haalt uit nieuwe situaties, scherp nadenken en het gevoel dat ik ergens beter in word. Dat was een eerlijke ontdekking: ik heb variatie en groei nodig om op mijn best te zijn.</p>
+        </div>
+        <div class="watwil-block reveal">
+          <h3>Van groot bureau naar eigen koers</h3>
+          <p>De stage leerde me niet alleen wat ik kan, maar ook wat ik wil — en wat niet. <strong>Ik leer het meest als ik overal bij betrokken word en echte verantwoordelijkheid draag.</strong></p>
+          <p>Dat doe je sneller bij een kleiner bedrijf. Minder lagen, minder micromanagement, meer impact per persoon. Ik merk dat ik liever op de marketingafdeling van een merk zelf wil werken dan bij een bureau.</p>
+          <p>De sector die mij het meest trekt? <strong>Sport.</strong> Een groeiend sportmerk, een supplementenbedrijf of een organisatie die sport als kern heeft — een plek waar ik kan meedenken over positionering, doelgroepen en campagnes.</p>
+        </div>
+        <div class="watwil-block reveal">
+          <h3>Resultaat &amp; blik vooruit</h3>
+          <p>Wendeline Sassen, Strategy Director bij TBWA\NEBOKO, schreef dat ik een van de beste stagiairs was die ze ooit hadden gehad — proactief, inhoudelijk sterk en professioneel. Dat geeft vertrouwen.</p>
+          <p>Ik wil doorgroeien in een omgeving waar ik breed inzetbaar ben, snel leer en echt impact kan maken. <em>Niet de grootste organisatie, maar de juiste.</em></p>
+        </div>
+      </div>
+
+      <div class="expect-box reveal">
+        <span class="expect-box-label">Wat je van mij mag verwachten</span>
+        <ul class="expect-list">
+          <li>Analytische scherpte en strategisch inzicht</li>
+          <li>Altijd goed voorbereid en op tijd</li>
+          <li>Een competitieve instelling die resultaten drijft</li>
+          <li>Eerlijke en directe communicatie</li>
+          <li>De wil om te blijven leren en doorgroeien</li>
+          <li>Sportmentaliteit: discipline en doorzettingsvermogen</li>
+          <li>Vrijheid benutten binnen heldere kaders</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======== CONTACT ======== -->
+<section id="contact" class="section">
+  <div class="section-inner">
+
+    <div class="section-header reveal">
+      <span class="section-label">04 — Contact</span>
+      <div class="section-divider"></div>
+    </div>
+
+    <div class="cta-block reveal">
+      <h2>Neem contact <span style="color:var(--blue)">op</span></h2>
+      <p>Wil je meer weten over mij, mijn stage-ervaringen of mijn ambities? Ik ben te vinden op onderstaande platformen. Geen lange mails — gewoon een bericht is genoeg.</p>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/in/tijnkaars/" target="_blank" rel="noopener" class="social-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+            <rect x="2" y="9" width="4" height="12"/>
+            <circle cx="4" cy="4" r="2"/>
+          </svg>
+          <span>LinkedIn</span>
+        </a>
+        <a href="https://www.instagram.com/ig.tijn/" target="_blank" rel="noopener" class="social-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
+          <span>Instagram</span>
+        </a>
+        <a href="https://www.tiktok.com/@tijnkaars" target="_blank" rel="noopener" class="social-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
+          </svg>
+          <span>TikTok</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======== FOOTER ======== -->
+<div class="footer-wrap">
+  <footer>
+    <span class="footer-name">Tijn Kaars</span>
+    <span>&copy; 2025 &ndash; 2026 tijnkaars.nl</span>
+  </footer>
+</div>
+
+<script>
+// ======== SCROLL PROGRESS BAR ========
+const scrollBar = document.getElementById('scroll-bar');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  scrollBar.style.width = Math.min(pct, 100) + '%';
+}, { passive: true });
+
+// ======== NAV SCROLL STATE ========
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+// ======== MOBILE NAV ========
+const navToggle = document.getElementById('nav-toggle');
+const navLinks  = document.getElementById('nav-links');
+navToggle.addEventListener('click', () => {
+  const open = navLinks.classList.toggle('mobile-open');
+  navToggle.setAttribute('aria-expanded', open);
+});
+navLinks.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => navLinks.classList.remove('mobile-open'));
+});
+
+// Mobile nav styles injected
+(function() {
+  const s = document.createElement('style');
+  s.textContent = `
+    @media (max-width: 768px) {
+      .nav-links.mobile-open {
+        display: flex !important;
+        flex-direction: column;
+        position: absolute;
+        top: 64px; left: 0; right: 0;
+        background: rgba(10,10,15,0.97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding: 1.5rem 5vw; gap: 1.2rem;
+        z-index: 999;
+      }
+    }
+  `;
+  document.head.appendChild(s);
+})();
+
+// ======== TYPEWRITER EYEBROW ========
+(function() {
+  const el   = document.getElementById('eyebrow');
+  const text = 'Student \u00B7 Strateeg \u00B7 Sportman';
+  let i = 0;
+  setTimeout(() => {
+    const timer = setInterval(() => {
+      el.textContent = text.slice(0, i + 1);
+      i++;
+      if (i >= text.length) clearInterval(timer);
+    }, 36);
+  }, 500);
+})();
+
+// ======== SCROLL REVEAL ========
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('in');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { rootMargin: '0px 0px -40px 0px', threshold: 0.07 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ======== TRAIT CARD 3D TILT ========
+document.querySelectorAll('.trait-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width  - .5;
+    const y = (e.clientY - r.top)  / r.height - .5;
+    card.style.transform = `perspective(600px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-2px)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1), border-color .25s, background .25s';
+    card.style.transform  = '';
+    setTimeout(() => { card.style.transition = ''; }, 500);
+  });
+});
+
+// ======== MAGNETIC CTA ========
+(function() {
+  const btn = document.getElementById('cta-main');
+  if (!btn || window.matchMedia('(pointer: coarse)').matches) return;
+  btn.addEventListener('mousemove', e => {
+    const r  = btn.getBoundingClientRect();
+    const dx = (e.clientX - (r.left + r.width  / 2)) * .15;
+    const dy = (e.clientY - (r.top  + r.height / 2)) * .15;
+    btn.style.transform = `translate(${dx}px,${dy}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transition = 'transform .4s cubic-bezier(.22,1,.36,1), opacity .2s';
+    btn.style.transform  = '';
+    setTimeout(() => { btn.style.transition = ''; }, 400);
+  });
+})();
+
+// ======== DRIVE NUMBER COUNTERS ========
+(function() {
+  const counters = document.querySelectorAll('.drive-num');
+  const targets  = [1, 2, 3];
+  const counterObs = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (!entry.isIntersecting) return;
+      const target = targets[i] || 1;
+      let current = 0;
+      const id = setInterval(() => {
+        current++;
+        entry.target.textContent = String(current).padStart(2, '0');
+        if (current >= target) clearInterval(id);
+      }, 80);
+      counterObs.unobserve(entry.target);
+    });
+  }, { threshold: .5 });
+  counters.forEach(c => counterObs.observe(c));
+})();
+</script>
+</body>
+</html>

@@ -6,27 +6,28 @@
 <title>Tijn Kaars — Strateeg &amp; Digital Marketeer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,400;1,500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 /* ======== RESET ======== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* ======== VARIABLES ======== */
 :root {
-  --bg:          #0a0a0f;
-  --bg-card:     #111118;
-  --bg-hover:    #16161f;
-  --bg-pill:     #1a1a26;
+  --bg:          #05091e;
+  --bg-card:     #0a1030;
+  --bg-hover:    #111840;
+  --bg-pill:     #162050;
   --text:        #ffffff;
-  --text-sub:    #8888a0;
-  --text-dim:    #555568;
-  --blue:        #4f8ef7;
-  --blue-dim:    rgba(79,142,247,0.12);
-  --blue-border: rgba(79,142,247,0.25);
-  --border:      rgba(255,255,255,0.06);
-  --border-md:   rgba(255,255,255,0.10);
-  --font-head:   'Bricolage Grotesque', sans-serif;
-  --font-body:   'Outfit', sans-serif;
+  --text-sub:    rgba(255,255,255,0.58);
+  --text-dim:    rgba(255,255,255,0.28);
+  --blue:        #0055fe;
+  --blue-dim:    rgba(0,85,254,0.12);
+  --blue-border: rgba(0,85,254,0.30);
+  --ice:         #6eb4ff;
+  --border:      rgba(255,255,255,0.07);
+  --border-md:   rgba(255,255,255,0.13);
+  --font-head:   'DM Sans', sans-serif;
+  --font-body:   'DM Sans', sans-serif;
 }
 
 /* ======== BASE ======== */
@@ -138,7 +139,7 @@ nav {
   border-bottom: 1px solid var(--border);
   transition: border-bottom-color .3s;
 }
-nav.scrolled { border-bottom-color: rgba(79,142,247,.15); }
+nav.scrolled { border-bottom-color: rgba(0,85,254,.2); }
 .nav-inner {
   max-width: 1280px; margin: 0 auto;
   padding: 0 5vw; height: 100%;
@@ -200,8 +201,8 @@ nav.scrolled { border-bottom-color: rgba(79,142,247,.15); }
   animation: pulseDot 2s infinite;
 }
 @keyframes pulseDot {
-  0%,100% { box-shadow: 0 0 0 0 rgba(79,142,247,.4); }
-  50%      { box-shadow: 0 0 0 4px rgba(79,142,247,0); }
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,85,254,.5); }
+  50%      { box-shadow: 0 0 0 4px rgba(0,85,254,0); }
 }
 .hero-eyebrow {
   font-size: .82rem; font-weight: 500;
@@ -251,7 +252,7 @@ nav.scrolled { border-bottom-color: rgba(79,142,247,.15); }
   width: 100%; height: 560px;
   object-fit: cover; object-position: center top;
   border-radius: 0;
-  box-shadow: 0 0 60px rgba(79,142,247,0.08);
+  box-shadow: 0 0 60px rgba(0,85,254,0.12);
   display: block;
 }
 .hero-caption {
@@ -332,7 +333,7 @@ nav.scrolled { border-bottom-color: rgba(79,142,247,.15); }
 }
 @keyframes borderPulse {
   0%,100% { border-color: var(--border); }
-  50%      { border-color: rgba(79,142,247,.2); }
+  50%      { border-color: rgba(0,85,254,.25); }
 }
 .personality-box h3 {
   font-size: 1rem; font-weight: 700;
@@ -383,7 +384,7 @@ nav.scrolled { border-bottom-color: rgba(79,142,247,.15); }
   background: var(--blue);
   transition: left .3s cubic-bezier(.22,1,.36,1);
 }
-.drive-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(79,142,247,.08); }
+.drive-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,85,254,.12); }
 .drive-card:hover::before { left: 0; }
 .drive-num {
   font-size: 2rem; font-weight: 800;
@@ -410,7 +411,7 @@ nav.scrolled { border-bottom-color: rgba(79,142,247,.15); }
   cursor: default;
 }
 .skill-row:last-child { border-bottom: 1px solid var(--border); }
-.skill-row:hover { background: rgba(79,142,247,.03); padding-left: 1.8rem; }
+.skill-row:hover { background: rgba(0,85,254,.05); padding-left: 1.8rem; }
 .skill-label-text {
   font-size: .95rem; font-weight: 700; color: var(--text);
 }
@@ -480,7 +481,7 @@ nav.scrolled { border-bottom-color: rgba(79,142,247,.15); }
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%,-50%);
   width: 400px; height: 200px;
-  background: radial-gradient(ellipse, rgba(79,142,247,.12) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(0,85,254,.18) 0%, transparent 70%);
   pointer-events: none;
 }
 .cta-block > * { position: relative; z-index: 1; }
@@ -511,7 +512,7 @@ nav.scrolled { border-bottom-color: rgba(79,142,247,.15); }
 .social-btn::before {
   content: '';
   position: absolute; top: 0; left: -100%; bottom: 0; width: 100%;
-  background: rgba(79,142,247,.08);
+  background: rgba(0,85,254,.1);
   transition: left .3s cubic-bezier(.22,1,.36,1);
 }
 .social-btn:hover { color: var(--text); border-color: var(--blue-border); transform: translateY(-2px); }
@@ -530,8 +531,9 @@ footer {
   font-size: .82rem; color: var(--text-dim);
 }
 .footer-name {
-  font-family: var(--font-head);
-  font-weight: 700; color: var(--blue); font-size: .9rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; color: var(--ice); font-size: .9rem;
+  letter-spacing: -0.01em;
 }
 
 /* ======== RESPONSIVE ======== */
@@ -599,7 +601,7 @@ footer {
         Student Digital Marketing &middot; 2025
       </div>
       <p class="hero-eyebrow" id="eyebrow"></p>
-      <h1 class="hero-name">TIJN<br>KAARS</h1>
+      <h1 class="hero-name">TIJN<br><span style="color:var(--ice)">KAARS</span></h1>
       <p class="hero-quote">"Strategie zonder ambitie is een plan. Ambitie zonder strategie is een droom."</p>
       <p class="hero-desc">
         22 jaar, student Commerciële Economie (Digital Marketing) aan de

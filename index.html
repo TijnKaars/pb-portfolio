@@ -380,16 +380,53 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   gap: .75rem; margin-top: 2.5rem;
 }
 .trait-card {
+  perspective: 900px;
+  cursor: pointer;
+  min-height: 195px;
+}
+.trait-card-inner {
+  display: grid;
+  width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(.4,0,.2,1);
+}
+.trait-card:hover .trait-card-inner {
+  transform: rotateY(180deg);
+}
+.trait-card-front,
+.trait-card-back {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 12px;
+  padding: 1.2rem 1.3rem;
+}
+.trait-card-front {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px; padding: 1.2rem 1.3rem;
-  transition: border-color .25s, background .25s;
-  transform-style: preserve-3d;
-  cursor: default;
+  position: relative;
+  display: flex; flex-direction: column;
 }
-.trait-card:hover {
-  border-color: var(--blue-border);
-  background: var(--bg-hover);
+.trait-card-icon {
+  position: absolute; top: 1rem; right: 1rem;
+  width: 20px; height: 20px;
+  color: var(--blue); opacity: .9;
+  flex-shrink: 0;
+}
+.trait-card-back {
+  background: rgba(0,82,255,0.07);
+  border: 1px solid rgba(0,82,255,0.22);
+  transform: rotateY(180deg);
+  display: flex; flex-direction: column;
+  justify-content: flex-start; gap: .6rem;
+}
+.trait-back-label {
+  font-size: .65rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--blue);
+}
+.trait-back-text {
+  font-size: .82rem; color: var(--text-sub); line-height: 1.65;
 }
 
 /* Personality split — 2-koloms, gelijke hoogte */
@@ -893,38 +930,117 @@ footer {
       <p><strong>Mijn doel?</strong> Doorgroeien als strateeg in de wereld van marketing, met een focus op de sportsector.</p>
     </div>
 
-    <!-- Eigenschap tegels -->
+    <!-- Eigenschap tegels — flip on hover -->
     <div class="trait-grid">
+
+      <!-- 01 Ambitieus & doelgericht -->
       <div class="trait-card reveal">
-        <span class="trait-num">01</span>
-        <div class="trait-title">Ambitieus &amp; doelgericht</div>
-        <div class="trait-desc">Ik stel doelen en werk er systematisch naartoe. Stilstand voelt als achteruitgang.</div>
+        <div class="trait-card-inner">
+          <div class="trait-card-front">
+            <svg class="trait-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+            </svg>
+            <span class="trait-num">01</span>
+            <div class="trait-title">Ambitieus &amp; doelgericht</div>
+            <div class="trait-desc">Ik stel doelen en werk er systematisch naartoe. Stilstand voelt als achteruitgang.</div>
+          </div>
+          <div class="trait-card-back">
+            <span class="trait-back-label">Bewijs</span>
+            <p class="trait-back-text">Mijn minor volg ik aan een universiteit in Tokio — een van de meest gewilde en competitieve minor-locaties binnen de HvA. Van alle aanmeldingen ben ik geselecteerd, wat aantoont dat mijn ambitie en doelgerichtheid mij onderscheiden van mijn medestudenten.</p>
+          </div>
+        </div>
       </div>
+
+      <!-- 02 Analytisch ingesteld -->
       <div class="trait-card reveal">
-        <span class="trait-num">02</span>
-        <div class="trait-title">Analytisch ingesteld</div>
-        <div class="trait-desc">Ik redeneer vanuit feiten en data. Onderbouwen is een vanzelfsprekendheid.</div>
+        <div class="trait-card-inner">
+          <div class="trait-card-front">
+            <svg class="trait-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 13.5V21h4.5v-7.5H3zm6.75-6V21h4.5V7.5H9.75zM16.5 3V21H21V3h-4.5z"/>
+            </svg>
+            <span class="trait-num">02</span>
+            <div class="trait-title">Analytisch ingesteld</div>
+            <div class="trait-desc">Ik redeneer vanuit feiten en data. Onderbouwen is een vanzelfsprekendheid.</div>
+          </div>
+          <div class="trait-card-back">
+            <span class="trait-back-label">Bewijs</span>
+            <p class="trait-back-text">Ik heb Wiskunde D en Wiskunde B afgerond op vwo-niveau en ben gestart met Mechanical Engineering. Hoewel ik gestopt ben, heb ik geleerd om vraagstukken analytisch te benaderen vanuit een wiskundig en natuurkundig perspectief — een manier van denken die ik dagelijks toepas.</p>
+          </div>
+        </div>
       </div>
+
+      <!-- 03 Competitief & gedreven -->
       <div class="trait-card reveal">
-        <span class="trait-num">03</span>
-        <div class="trait-title">Competitief &amp; gedreven</div>
-        <div class="trait-desc">De wil om te presteren motiveert mij om het maximale uit elke situatie te halen.</div>
+        <div class="trait-card-inner">
+          <div class="trait-card-front">
+            <svg class="trait-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
+            </svg>
+            <span class="trait-num">03</span>
+            <div class="trait-title">Competitief &amp; gedreven</div>
+            <div class="trait-desc">De wil om te presteren motiveert mij om het maximale uit elke situatie te halen.</div>
+          </div>
+          <div class="trait-card-back">
+            <span class="trait-back-label">Bewijs</span>
+            <p class="trait-back-text">Als bijbaan werk ik als Marketing &amp; PR Specialist bij New Era Consultancy. Er zijn bijbanen waarbij ik meer zou verdienen, maar ik kies bewust voor deze rol: hier ontwikkel ik vaardigheden die direct relevant zijn voor mijn carrière. Presteren en groeien gaan voor mij boven een hoger uurtarief.</p>
+          </div>
+        </div>
       </div>
+
+      <!-- 04 Sportmentaliteit -->
       <div class="trait-card reveal">
-        <span class="trait-num">04</span>
-        <div class="trait-title">Sportmentaliteit</div>
-        <div class="trait-desc">Discipline en consistentie — geleerd op het sportveld, toegepast in alles wat ik doe.</div>
+        <div class="trait-card-inner">
+          <div class="trait-card-front">
+            <svg class="trait-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"/>
+            </svg>
+            <span class="trait-num">04</span>
+            <div class="trait-title">Sportmentaliteit</div>
+            <div class="trait-desc">Discipline en consistentie — geleerd op het sportveld, toegepast in alles wat ik doe.</div>
+          </div>
+          <div class="trait-card-back">
+            <span class="trait-back-label">Bewijs</span>
+            <p class="trait-back-text">Al 15+ jaar actief als voetballer, meerdere jaren als aanvoerder. Op het veld leer je dat discipline en consistentie het verschil maken. Die mentaliteit — elke dag een beetje beter — neem ik mee in alles wat ik doe.</p>
+          </div>
+        </div>
       </div>
+
+      <!-- 05 Strategisch denken -->
       <div class="trait-card reveal">
-        <span class="trait-num">05</span>
-        <div class="trait-title">Strategisch denken</div>
-        <div class="trait-desc">Ik zie het grotere plaatje en vertaal inzichten naar concrete, haalbare acties.</div>
+        <div class="trait-card-inner">
+          <div class="trait-card-front">
+            <svg class="trait-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/>
+            </svg>
+            <span class="trait-num">05</span>
+            <div class="trait-title">Strategisch denken</div>
+            <div class="trait-desc">Ik zie het grotere plaatje en vertaal inzichten naar concrete, haalbare acties.</div>
+          </div>
+          <div class="trait-card-back">
+            <span class="trait-back-label">Bewijs</span>
+            <p class="trait-back-text">Tijdens mijn stage bij TBWA\NEBOKO werkte ik op de strategieafdeling van een van de grootste reclamebureaus van Nederland. Van consumenteninzicht tot merkpositionering: ik leerde hoe je data en inzichten omzet in een heldere, onderbouwde strategie.</p>
+          </div>
+        </div>
       </div>
+
+      <!-- 06 Leergierig -->
       <div class="trait-card reveal">
-        <span class="trait-num">06</span>
-        <div class="trait-title">Leergierig</div>
-        <div class="trait-desc">Elke ervaring is een kans om beter te worden. Ik stel vragen en ga altijd een laag dieper.</div>
+        <div class="trait-card-inner">
+          <div class="trait-card-front">
+            <svg class="trait-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/>
+            </svg>
+            <span class="trait-num">06</span>
+            <div class="trait-title">Leergierig</div>
+            <div class="trait-desc">Elke ervaring is een kans om beter te worden. Ik stel vragen en ga altijd een laag dieper.</div>
+          </div>
+          <div class="trait-card-back">
+            <span class="trait-back-label">Bewijs</span>
+            <p class="trait-back-text">Naast mijn reguliere studie volgde ik het extracurriculaire programma Leadership in Marketing aan de HvA — een selectief programma gericht op leiderschap, strategie en persoonlijke ontwikkeling. Ik zoek altijd naar kansen om verder te gaan dan wat vereist is.</p>
+          </div>
+        </div>
       </div>
+
     </div>
 
     <!-- Persoonlijkheid: tekst+bars links / MBTI cards rechts -->
@@ -1312,20 +1428,6 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '0px 0px -40px 0px', threshold: 0.07 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ======== TRAIT CARD 3D TILT ========
-document.querySelectorAll('.trait-card').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const r = card.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width  - .5;
-    const y = (e.clientY - r.top)  / r.height - .5;
-    card.style.transform = `perspective(600px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-2px)`;
-  });
-  card.addEventListener('mouseleave', () => {
-    card.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1), border-color .25s, background .25s';
-    card.style.transform  = '';
-    setTimeout(() => { card.style.transition = ''; }, 500);
-  });
-});
 
 // ======== MAGNETIC CTA ========
 (function() {

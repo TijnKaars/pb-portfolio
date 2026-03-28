@@ -826,6 +826,117 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   font-size: .82rem; color: var(--text-sub); line-height: 1.72;
 }
 
+/* ======== CASES CAROUSEL ======== */
+.cases-section { margin-top: 5rem; }
+
+/* Heading with side panels */
+.cases-heading-wrap {
+  position: relative;
+  text-align: center;
+  padding: 3rem 0 3.5rem;
+  overflow: hidden;
+}
+.cases-heading-panel {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 36%;
+  background: #03080f;
+}
+.cases-heading-panel--left {
+  left: 0;
+  clip-path: polygon(0 0, 100% 0, 74% 100%, 0 100%);
+}
+.cases-heading-panel--right {
+  right: 0;
+  clip-path: polygon(26% 0, 100% 0, 100% 100%, 0 100%);
+}
+.cases-heading-inner {
+  position: relative; z-index: 1;
+}
+.cases-sup {
+  display: block;
+  font-size: .72rem; font-weight: 700;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 1rem;
+}
+.cases-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700; line-height: 1.15;
+  color: var(--text); margin-bottom: 1rem;
+}
+.cases-title span { color: var(--text-sub); }
+.cases-sub {
+  font-size: .95rem; color: var(--text-sub);
+  line-height: 1.75; max-width: 480px; margin: 0 auto;
+}
+
+/* Carousel */
+.cases-carousel {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  mask-image:         linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+}
+.cases-track {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  animation: casesScroll 40s linear infinite;
+}
+.cases-track:hover { animation-play-state: paused; }
+@keyframes casesScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.case-card {
+  width: 400px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #0b1120;
+  flex-shrink: 0;
+  cursor: default;
+}
+.case-img {
+  width: 100%; height: 220px;
+  object-fit: cover; display: block;
+}
+.case-img-ph {
+  width: 100%; height: 220px;
+  display: block;
+}
+.case-content {
+  padding: 1.5rem 1.5rem 1.6rem;
+}
+.case-brand {
+  font-size: 1.4rem; font-weight: 800;
+  color: var(--text); margin-bottom: .45rem;
+  letter-spacing: -0.02em;
+}
+.case-row {
+  display: flex; align-items: center; gap: .5rem;
+  margin-bottom: .8rem;
+}
+.case-company { font-size: .82rem; color: var(--text-sub); }
+.case-badge {
+  font-size: .62rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  background: var(--blue); color: #fff;
+  border-radius: 5px; padding: .2rem .5rem;
+}
+.case-desc {
+  font-size: .84rem; color: rgba(255,255,255,0.42);
+  line-height: 1.72; margin-bottom: 1.1rem;
+}
+.case-tags {
+  display: flex; gap: .5rem; flex-wrap: wrap;
+}
+.case-tag {
+  font-size: .77rem; color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 999px; padding: .3rem .75rem;
+}
+
 /* ======== SECTION BRIDGE ======== */
 .section-bridge {
   position: relative;
@@ -1507,6 +1618,157 @@ footer {
             <span class="skill-back-label">Bewijs uit de praktijk</span>
             <p class="skill-back-text">Bij Save the Children veranderde de scope van de analyse vier keer — van campagnegericht naar thematisch, van drie maanden naar een jaar. Ik leerde minder vast te houden aan de oorspronkelijke afbakening.<br><br>Bij McDonald's schreef ik binnen een half uur een scherpe Engelstalige e-mail voor 42 ontvangers — inclusief de CMO. De feedback: <em>"zorgvuldig, strak en to the point."</em></p>
           </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Cases carousel -->
+    <div class="cases-section">
+
+      <div class="cases-heading-wrap">
+        <div class="cases-heading-panel cases-heading-panel--left"></div>
+        <div class="cases-heading-panel cases-heading-panel--right"></div>
+        <div class="cases-heading-inner">
+          <span class="cases-sup">Cases uit de praktijk</span>
+          <h3 class="cases-title">Resultaten die<br><span>voor zich spreken.</span></h3>
+          <p class="cases-sub">Bijdragen aan echte opdrachten voor grote merken — van analyse tot live campagne.</p>
+        </div>
+      </div>
+
+      <div class="cases-carousel">
+        <div class="cases-track">
+
+          <!-- bol.com -->
+          <div class="case-card">
+            <div class="case-img-ph" style="background:linear-gradient(145deg,#1a1f35 0%,#0d1228 100%)"></div>
+            <div class="case-content">
+              <div class="case-brand">bol.com</div>
+              <div class="case-row">
+                <span class="case-company">TBWA\NEBOKO</span>
+                <span class="case-badge">PITCH GEWONNEN</span>
+              </div>
+              <p class="case-desc">Analyse van 10 jaar communicatiegeschiedenis om te achterhalen waarom bol.com marktaandeel verliest. Pitch gewonnen — bol.com is nu klant.</p>
+              <div class="case-tags">
+                <span class="case-tag">Competitive analyse</span>
+                <span class="case-tag">10 jaar data</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save the Children -->
+          <div class="case-card">
+            <div class="case-img-ph" style="background:linear-gradient(145deg,#0d2035 0%,#0a1825 100%)"></div>
+            <div class="case-content">
+              <div class="case-brand">Save the Children</div>
+              <div class="case-row">
+                <span class="case-company">TBWA\NEBOKO</span>
+                <span class="case-badge">LIVE</span>
+              </div>
+              <p class="case-desc">Beeldselectie voor een tv-commercial met meer dan €2 miljoen campagnebudget. Meerdere geselecteerde beelden zijn gebruikt in de definitieve uitzending.</p>
+              <div class="case-tags">
+                <span class="case-tag">€2M+ campagne</span>
+                <span class="case-tag">TV-commercial</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ING -->
+          <div class="case-card">
+            <div class="case-img-ph" style="background:linear-gradient(145deg,#1c1a10 0%,#121108 100%)"></div>
+            <div class="case-content">
+              <div class="case-brand">ING</div>
+              <div class="case-row">
+                <span class="case-company">TBWA\NEBOKO</span>
+                <span class="case-badge">WK 2026</span>
+              </div>
+              <p class="case-desc">Onderzoek naar maatschappelijke thema's voor de WK 2026 campagne van het Nederlands elftal. Mijn thema is aangenomen en vormt de kern van de campagne.</p>
+              <div class="case-tags">
+                <span class="case-tag">Campagnethema</span>
+                <span class="case-tag">Maatschappelijk onderzoek</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- McDonald's -->
+          <div class="case-card">
+            <div class="case-img-ph" style="background:linear-gradient(145deg,#1e1510 0%,#140e09 100%)"></div>
+            <div class="case-content">
+              <div class="case-brand">McDonald's</div>
+              <div class="case-row">
+                <span class="case-company">TBWA\NEBOKO</span>
+                <span class="case-badge">6 MAANDEN</span>
+              </div>
+              <p class="case-desc">Maandelijkse concurrentieanalyse van 6 merken op alle kanalen. Dagelijkse rapportage bij bijzondere acties van concurrenten voor het Nederlandse team.</p>
+              <div class="case-tags">
+                <span class="case-tag">6 concurrenten</span>
+                <span class="case-tag">Alle kanalen</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Duplicates for seamless loop -->
+          <div class="case-card">
+            <div class="case-img-ph" style="background:linear-gradient(145deg,#1a1f35 0%,#0d1228 100%)"></div>
+            <div class="case-content">
+              <div class="case-brand">bol.com</div>
+              <div class="case-row">
+                <span class="case-company">TBWA\NEBOKO</span>
+                <span class="case-badge">PITCH GEWONNEN</span>
+              </div>
+              <p class="case-desc">Analyse van 10 jaar communicatiegeschiedenis om te achterhalen waarom bol.com marktaandeel verliest. Pitch gewonnen — bol.com is nu klant.</p>
+              <div class="case-tags">
+                <span class="case-tag">Competitive analyse</span>
+                <span class="case-tag">10 jaar data</span>
+              </div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="case-img-ph" style="background:linear-gradient(145deg,#0d2035 0%,#0a1825 100%)"></div>
+            <div class="case-content">
+              <div class="case-brand">Save the Children</div>
+              <div class="case-row">
+                <span class="case-company">TBWA\NEBOKO</span>
+                <span class="case-badge">LIVE</span>
+              </div>
+              <p class="case-desc">Beeldselectie voor een tv-commercial met meer dan €2 miljoen campagnebudget. Meerdere geselecteerde beelden zijn gebruikt in de definitieve uitzending.</p>
+              <div class="case-tags">
+                <span class="case-tag">€2M+ campagne</span>
+                <span class="case-tag">TV-commercial</span>
+              </div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="case-img-ph" style="background:linear-gradient(145deg,#1c1a10 0%,#121108 100%)"></div>
+            <div class="case-content">
+              <div class="case-brand">ING</div>
+              <div class="case-row">
+                <span class="case-company">TBWA\NEBOKO</span>
+                <span class="case-badge">WK 2026</span>
+              </div>
+              <p class="case-desc">Onderzoek naar maatschappelijke thema's voor de WK 2026 campagne van het Nederlands elftal. Mijn thema is aangenomen en vormt de kern van de campagne.</p>
+              <div class="case-tags">
+                <span class="case-tag">Campagnethema</span>
+                <span class="case-tag">Maatschappelijk onderzoek</span>
+              </div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="case-img-ph" style="background:linear-gradient(145deg,#1e1510 0%,#140e09 100%)"></div>
+            <div class="case-content">
+              <div class="case-brand">McDonald's</div>
+              <div class="case-row">
+                <span class="case-company">TBWA\NEBOKO</span>
+                <span class="case-badge">6 MAANDEN</span>
+              </div>
+              <p class="case-desc">Maandelijkse concurrentieanalyse van 6 merken op alle kanalen. Dagelijkse rapportage bij bijzondere acties van concurrenten voor het Nederlandse team.</p>
+              <div class="case-tags">
+                <span class="case-tag">6 concurrenten</span>
+                <span class="case-tag">Alle kanalen</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 

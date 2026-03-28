@@ -319,15 +319,31 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: none; }
 }
-.hero-photo-wrap {
-  opacity: 0; transform: translateY(28px);
-  animation: slideUp .9s .2s cubic-bezier(.22,1,.36,1) both;
-}
-.hero-photo-frame {
+.hero-globe-wrap {
   position: relative;
-  border: 1px solid rgba(255,255,255,0.14);
-  box-shadow: 0 0 70px rgba(0,82,255,0.14);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  animation: slideUp .9s .4s cubic-bezier(.22,1,.36,1) both;
 }
+#globe-canvas { display: block; width: 400px; height: 400px; }
+.globe-city-label {
+  position: absolute; top: 0; left: 0;
+  display: flex; align-items: center; gap: 6px;
+  pointer-events: none; white-space: nowrap;
+  transition: opacity .2s;
+}
+.globe-city-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.25), 0 0 10px rgba(255,255,255,0.6);
+}
+.globe-city-name {
+  font-size: .7rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+}
+/* keep old photo classes to avoid errors */
+.hero-photo-wrap { display: none; }
 .hero-photo-frame img {
   width: 100%; height: 540px;
   object-fit: cover; object-position: center top;
@@ -1345,13 +1361,16 @@ footer {
         </div>
       </div>
     </div>
-    <div class="hero-photo-wrap">
-      <div class="hero-photo-frame">
-        <div class="frame-line frame-line-h"></div>
-        <div class="frame-line frame-line-v"></div>
-        <img src="Ijskoud.jpg" alt="Tijn Kaars — Alpen, 2025">
+    <div class="hero-globe-wrap">
+      <canvas id="globe-canvas"></canvas>
+      <div class="globe-city-label" id="globe-lbl-ams">
+        <span class="globe-city-dot"></span>
+        <span class="globe-city-name">Amsterdam</span>
       </div>
-      <p class="hero-caption">Alpen, 2025</p>
+      <div class="globe-city-label" id="globe-lbl-tky">
+        <span class="globe-city-dot"></span>
+        <span class="globe-city-name">Tokyo</span>
+      </div>
     </div>
   </div>
 </section>
@@ -2102,6 +2121,200 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   counters.forEach(c => counterObs.observe(c));
 })();
 
+</script>
+
+<!-- ======== 3D GLOBE (Three.js) ======== -->
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+(function initGlobe() {
+  const wrap   = document.querySelector('.hero-globe-wrap');
+  const canvas = document.getElementById('globe-canvas');
+  if (!wrap || !canvas) return;
+
+  // ── Renderer ──────────────────────────────────────────────
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  // ── Scene / Camera ────────────────────────────────────────
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  camera.position.z = 2.75;
+
+  function onResize() {
+    const w = canvas.clientWidth  || 400;
+    const h = canvas.clientHeight || 400;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  onResize();
+  window.addEventListener('resize', onResize);
+
+  // ── All globe objects live in one group (rotates together) ─
+  const globe = new THREE.Group();
+  scene.add(globe);
+
+  const R = 1;
+
+  // Wireframe sphere — white technical look
+  globe.add(new THREE.Mesh(
+    new THREE.SphereGeometry(R, 40, 28),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.14 })
+  ));
+
+  // Soft glow halo (slightly larger, backside)
+  globe.add(new THREE.Mesh(
+    new THREE.SphereGeometry(R * 1.09, 32, 32),
+    new THREE.MeshBasicMaterial({ color: 0x88aaff, transparent: true, opacity: 0.06, side: THREE.BackSide })
+  ));
+
+  // ── Helpers ───────────────────────────────────────────────
+  function ll(lat, lon, r = R) {
+    const φ = (90 - lat) * Math.PI / 180;
+    const λ = (lon + 180) * Math.PI / 180;
+    return new THREE.Vector3(
+      -r * Math.sin(φ) * Math.cos(λ),
+       r * Math.cos(φ),
+       r * Math.sin(φ) * Math.sin(λ)
+    );
+  }
+
+  function slerp(a, b, t) {
+    const Ω = a.angleTo(b);
+    if (Ω < 1e-4) return a.clone().lerp(b, t).normalize();
+    const s = Math.sin(Ω);
+    return a.clone().multiplyScalar(Math.sin((1 - t) * Ω) / s)
+           .add(b.clone().multiplyScalar(Math.sin(t * Ω) / s));
+  }
+
+  // ── Cities ────────────────────────────────────────────────
+  const AMS = ll(52.37,  4.90).normalize();
+  const TKY = ll(35.68, 139.65).normalize();
+
+  function addDot(v) {
+    const m = new THREE.Mesh(
+      new THREE.SphereGeometry(0.022, 10, 10),
+      new THREE.MeshBasicMaterial({ color: 0xffffff })
+    );
+    m.position.copy(v.clone().multiplyScalar(R + 0.008));
+    globe.add(m);
+    return m;
+  }
+
+  function addRing(v) {
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xffffff, transparent: true, opacity: 0.4, side: THREE.DoubleSide
+    });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.03, 0.048, 36), mat);
+    const p = v.clone().multiplyScalar(R + 0.01);
+    ring.position.copy(p);
+    ring.lookAt(p.clone().multiplyScalar(3));
+    globe.add(ring);
+    return ring;
+  }
+
+  addDot(AMS); addDot(TKY);
+  const amsRing = addRing(AMS);
+  const tkyRing = addRing(TKY);
+
+  // Local positions of city centers (for label projection)
+  const amsPosL = AMS.clone().multiplyScalar(R + 0.01);
+  const tkyPosL = TKY.clone().multiplyScalar(R + 0.01);
+
+  // ── Great-circle arc AMS → TKY ───────────────────────────
+  const N = 160;
+  const ARC_H = 0.30;
+  const arcPts = Array.from({ length: N + 1 }, (_, i) => {
+    const t = i / N;
+    return slerp(AMS, TKY, t).multiplyScalar(R + Math.sin(t * Math.PI) * ARC_H);
+  });
+
+  // Dim background arc
+  globe.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(arcPts),
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22 })
+  ));
+
+  // Bright traveling dash (pre-allocated buffer)
+  const DASH_N = 30; // number of points in the bright segment
+  const dashBuf = new Float32Array(DASH_N * 3);
+  const dashAttr = new THREE.BufferAttribute(dashBuf, 3);
+  const dashGeo = new THREE.BufferGeometry();
+  dashGeo.setAttribute('position', dashAttr);
+  dashGeo.setDrawRange(0, 0);
+  globe.add(new THREE.Line(dashGeo, new THREE.LineBasicMaterial({ color: 0xffffff })));
+
+  // Traveling dot at arc head
+  const dot = new THREE.Mesh(
+    new THREE.SphereGeometry(0.026, 8, 8),
+    new THREE.MeshBasicMaterial({ color: 0xffffff })
+  );
+  globe.add(dot);
+
+  // ── Labels ────────────────────────────────────────────────
+  const lblAms = document.getElementById('globe-lbl-ams');
+  const lblTky = document.getElementById('globe-lbl-tky');
+
+  function projectLabel(el, localPos) {
+    const wp = localPos.clone();
+    globe.localToWorld(wp);
+    const ndc = wp.project(camera);
+    const w = canvas.clientWidth  || 400;
+    const h = canvas.clientHeight || 400;
+    const x = ( ndc.x * 0.5 + 0.5) * w;
+    const y = (-ndc.y * 0.5 + 0.5) * h;
+    el.style.left    = x + 'px';
+    el.style.top     = y + 'px';
+    el.style.opacity = ndc.z < 1 ? '1' : '0';
+    el.style.transform = 'translate(10px, -50%)';
+  }
+
+  // ── Animation ─────────────────────────────────────────────
+  let arcT  = 0;
+  let pulse = 0;
+
+  function tick() {
+    requestAnimationFrame(tick);
+
+    pulse += 0.018;
+    arcT   = (arcT + 0.0022) % 1;
+
+    // Rotate globe
+    globe.rotation.y += 0.0016;
+
+    // Pulsing rings
+    const s = 0.9 + Math.sin(pulse) * 0.12;
+    amsRing.scale.setScalar(s);
+    tkyRing.scale.setScalar(0.9 + Math.sin(pulse + 1.1) * 0.12);
+
+    // Traveling dash: fill dashBuf with DASH_N points starting at arcT
+    const head = Math.floor(arcT * N);
+    let count = 0;
+    for (let i = 0; i < DASH_N; i++) {
+      const idx = (head - i + N + 1) % (N + 1);
+      const p   = arcPts[idx];
+      dashBuf[count * 3]     = p.x;
+      dashBuf[count * 3 + 1] = p.y;
+      dashBuf[count * 3 + 2] = p.z;
+      count++;
+    }
+    dashAttr.needsUpdate = true;
+    dashGeo.setDrawRange(0, DASH_N);
+
+    // Dot at arc head
+    dot.position.copy(arcPts[head]);
+
+    // Label positions
+    projectLabel(lblAms, amsPosL);
+    projectLabel(lblTky, tkyPosL);
+
+    renderer.render(scene, camera);
+  }
+
+  tick();
+})();
 </script>
 </body>
 </html>

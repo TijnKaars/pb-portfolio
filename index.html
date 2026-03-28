@@ -1218,115 +1218,200 @@ document.querySelectorAll('.trait-card').forEach(card => {
 </script>
 
 <script type="module">
-// ======== GLOBE (cobe) ========
+// ======== GLOBE (cobe vanilla JS) ========
 import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
 
-(function() {
+(function () {
   const canvas = document.getElementById('globe-canvas');
-  const wrap   = canvas ? canvas.parentElement : null;
+  const wrap   = canvas && canvas.parentElement;
   if (!canvas || !wrap) return;
 
-  const THETA = 0.22;
-
-  // City data for labels
-  const cities = [
-    { lat: 52.3676, lon:   4.9041, text: 'AMSTERDAM' },
-    { lat: 35.6762, lon: 139.6503, text: 'TOKYO'     },
+  // ---- Constants ----
+  const THETA = 0.25;   // globe tilt
+  const SPEED = 0.003;
+  const CITIES = [
+    { lat: 52.3676, lon:   4.9041, label: 'AMSTERDAM' },
+    { lat: 35.6762, lon: 139.6503, label: 'TOKYO'     },
   ];
 
-  // Create label DOM elements
-  const labelEls = cities.map(c => {
+  // ---- Arc overlay canvas (2D, drawn manually) ----
+  const arcCvs = document.createElement('canvas');
+  arcCvs.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;border-radius:50%;';
+  wrap.appendChild(arcCvs);
+  const arcCtx = arcCvs.getContext('2d');
+
+  function resizeArc() {
+    const w = canvas.offsetWidth, dpr = Math.min(devicePixelRatio || 1, 2);
+    arcCvs.width  = w * dpr;
+    arcCvs.height = w * dpr;
+  }
+
+  // ---- Label elements ----
+  const labelEls = CITIES.map(c => {
     const el = document.createElement('div');
     el.className = 'globe-label';
-    el.textContent = c.text;
-    el.style.opacity = '0';
+    el.textContent = c.label;
     wrap.appendChild(el);
     return el;
   });
 
-  // Project lat/lon → {x, y, z} in canvas space given current phi
-  function project(lat, lon, currentPhi, W) {
-    const φ = lat * Math.PI / 180;
-    const λ = lon * Math.PI / 180;
-    // Unit sphere
-    const x0 =  Math.cos(φ) * Math.sin(λ);
-    const y0 = -Math.sin(φ);
-    const z0 =  Math.cos(φ) * Math.cos(λ);
-    // Rotate around Y by -currentPhi
-    const cp = Math.cos(-currentPhi), sp = Math.sin(-currentPhi);
-    const xr = x0 * cp - z0 * sp;
-    const zr = x0 * sp + z0 * cp;
-    // Rotate around X by -THETA
-    const ct = Math.cos(-THETA), st = Math.sin(-THETA);
-    const yr = y0 * ct - zr * st;
-    const zf = y0 * st + zr * ct;
-    const r  = W / 2;
-    return { x: W / 2 + xr * r, y: W / 2 + yr * r, z: zf };
+  // ---- 3-D math ----
+  function ll2v(lat, lon) {
+    const φ = lat * Math.PI / 180, λ = lon * Math.PI / 180;
+    return [Math.cos(φ) * Math.sin(λ), -Math.sin(φ), Math.cos(φ) * Math.cos(λ)];
   }
 
-  let globe = null, phi = 0, phiOffset = 0, dragPhi = 0, pointerDown = null;
+  // Spherical linear interpolation (great-circle path)
+  function slerp(a, b, t) {
+    let dot = a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+    dot = Math.max(-1, Math.min(1, dot));
+    const Ω = Math.acos(dot);
+    if (Ω < 1e-6) return a;
+    const sΩ = Math.sin(Ω);
+    const sa = Math.sin((1 - t) * Ω) / sΩ, sb = Math.sin(t * Ω) / sΩ;
+    return [sa*a[0]+sb*b[0], sa*a[1]+sb*b[1], sa*a[2]+sb*b[2]];
+  }
 
-  function init() {
+  // Project unit vector → screen coords given current globe rotation
+  function project(v, curPhi, W) {
+    let [x, y, z] = v;
+    // Rotate Y by -curPhi
+    const cp = Math.cos(-curPhi), sp = Math.sin(-curPhi);
+    [x, z] = [x*cp - z*sp, x*sp + z*cp];
+    // Rotate X by THETA (tilt)
+    const ct = Math.cos(THETA), st = Math.sin(THETA);
+    [y, z] = [y*ct - z*st, y*st + z*ct];
+    const R = W / 2;
+    return { sx: W/2 + x*R, sy: W/2 + y*R, depth: z };
+  }
+
+  const vA = ll2v(52.3676,   4.9041);   // Amsterdam
+  const vT = ll2v(35.6762, 139.6503);   // Tokyo
+
+  // ---- Globe state ----
+  let phi = 0, phiOffset = 0, dragPhi = 0;
+  let pointerDown = null, lastClientX = 0, velPhi = 0;
+  let arcT = 0;
+  let globe = null;
+
+  function setup() {
     const w = canvas.offsetWidth;
-    if (w === 0 || globe) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (!w || globe) return;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    resizeArc();
 
     globe = createGlobe(canvas, {
       devicePixelRatio: dpr,
       width:  w * dpr,
       height: w * dpr,
-      phi: 0,
+      phi:   0,
       theta: THETA,
-      dark: 1,
+      dark:  1,
       diffuse: 1.6,
-      mapSamples: 20000,
+      mapSamples:    20000,
       mapBrightness: 7,
-      baseColor:   [0.72, 0.72, 0.80],   // wit/grijs continenten
-      markerColor: [0.0,  0.32, 1.0],    // blauw
-      glowColor:   [0.30, 0.30, 0.40],   // subtiel grijs
+      baseColor:   [0.70, 0.70, 0.78],  // wit/grijs
+      markerColor: [0.00, 0.32, 1.00],  // blauw
+      glowColor:   [0.22, 0.22, 0.36],  // donker grijsblauw
       markers: [
         { location: [52.3676,   4.9041], size: 0.07 },
         { location: [35.6762, 139.6503], size: 0.07 },
       ],
-      arcs: [
-        { from: [52.3676, 4.9041], to: [35.6762, 139.6503] },
-      ],
-      arcColor:  [0.0, 0.32, 1.0],
-      arcWidth:  1.5,
-      arcHeight: 0.45,
       onRender(state) {
+        // 1. Advance rotation
+        phi      += SPEED;
+        phiOffset += velPhi;
+        velPhi   *= 0.93;
         const curPhi = phi + phiOffset + dragPhi;
         state.phi = curPhi;
-        phi += 0.003;
 
-        // Update label positions
-        const W = canvas.offsetWidth;
-        cities.forEach((c, i) => {
-          const p = project(c.lat, c.lon, curPhi, W);
-          const vis = p.z > 0.08 ? Math.min(1, (p.z - 0.08) * 8) : 0;
-          labelEls[i].style.left    = p.x + 'px';
-          labelEls[i].style.top     = (p.y - 14) + 'px';
+        // 2. Advance arc animation
+        arcT = (arcT + 0.004) % 1;
+
+        const W   = canvas.offsetWidth;
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+
+        // 3. Update city labels
+        CITIES.forEach((c, i) => {
+          const p = project(ll2v(c.lat, c.lon), curPhi, W);
+          const vis = p.depth > 0.12 ? Math.min(1, (p.depth - 0.12) * 6) : 0;
           labelEls[i].style.opacity = vis;
+          if (vis > 0.01) {
+            labelEls[i].style.left = p.sx + 'px';
+            labelEls[i].style.top  = (p.sy - 20) + 'px';
+          }
         });
+
+        // 4. Draw animated arc on overlay
+        const STEPS = 120, TAIL = 0.38;
+        arcCtx.clearRect(0, 0, arcCvs.width, arcCvs.height);
+        arcCtx.save();
+        arcCtx.scale(dpr, dpr);
+
+        arcCtx.beginPath();
+        let penDown = false;
+
+        for (let i = 0; i <= STEPS; i++) {
+          const t    = i / STEPS;
+          const head = arcT;
+          const tail = ((arcT - TAIL) + 1) % 1;
+          const inSeg = tail < head ? (t >= tail && t <= head) : (t >= tail || t <= head);
+          if (!inSeg) { penDown = false; continue; }
+
+          const p = project(slerp(vA, vT, t), curPhi, W);
+          if (p.depth < 0) { penDown = false; continue; }
+
+          // Per-point alpha: fade at the tail tip
+          const tRel = tail < head ? (t - tail) / TAIL : (t >= tail ? (t - tail) / TAIL : (1 - tail + t) / TAIL);
+          const alpha = 0.15 + 0.75 * Math.max(0, Math.min(1, tRel));
+
+          if (!penDown) {
+            arcCtx.stroke();
+            arcCtx.beginPath();
+            arcCtx.strokeStyle = `rgba(0,82,255,${alpha.toFixed(2)})`;
+            arcCtx.lineWidth   = 2.2;
+            arcCtx.lineCap     = 'round';
+            arcCtx.moveTo(p.sx, p.sy);
+            penDown = true;
+          } else {
+            arcCtx.lineTo(p.sx, p.sy);
+          }
+        }
+        arcCtx.stroke();
+        arcCtx.restore();
       },
     });
-    setTimeout(() => { canvas.style.opacity = '1'; });
+
+    setTimeout(() => { canvas.style.opacity = '1'; }, 100);
   }
 
+  // ---- Pointer interaction ----
   canvas.addEventListener('pointerdown', e => {
-    pointerDown = e.clientX;
+    pointerDown  = e.clientX;
+    lastClientX  = e.clientX;
     canvas.style.cursor = 'grabbing';
   });
   window.addEventListener('pointermove', e => {
-    if (pointerDown !== null) dragPhi = (e.clientX - pointerDown) / 280;
+    if (pointerDown === null) return;
+    velPhi   = (e.clientX - lastClientX) / 300;
+    dragPhi  = (e.clientX - pointerDown)  / 300;
+    lastClientX = e.clientX;
   }, { passive: true });
   window.addEventListener('pointerup', () => {
     if (pointerDown !== null) { phiOffset += dragPhi; dragPhi = 0; pointerDown = null; }
     canvas.style.cursor = 'grab';
   }, { passive: true });
 
-  new ResizeObserver(init).observe(canvas);
-  init();
+  // ---- Init ----
+  new ResizeObserver(() => { resizeArc(); }).observe(canvas);
+  if (canvas.offsetWidth > 0) {
+    setup();
+  } else {
+    const ro = new ResizeObserver(entries => {
+      if (entries[0]?.contentRect.width > 0) { ro.disconnect(); setup(); }
+    });
+    ro.observe(canvas);
+  }
 })();
 </script>
 </body>

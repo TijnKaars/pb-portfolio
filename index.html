@@ -251,6 +251,29 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   to   { opacity: 1; transform: none; }
 }
 
+/* Globe labels */
+.globe-label {
+  position: absolute;
+  transform: translateX(-50%) translateY(-100%);
+  font-family: var(--font-body);
+  font-size: .52rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: #fff;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 2px 7px; border-radius: 4px;
+  pointer-events: none; white-space: nowrap;
+  transition: opacity .4s;
+  margin-top: -10px;
+}
+.globe-label::after {
+  content: '';
+  position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: rgba(255,255,255,0.15);
+}
+
 /* Globe wrapper */
 .globe-wrap {
   position: relative; z-index: 1;
@@ -1200,13 +1223,48 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
 
 (function() {
   const canvas = document.getElementById('globe-canvas');
-  if (!canvas) return;
+  const wrap   = canvas ? canvas.parentElement : null;
+  if (!canvas || !wrap) return;
 
-  let globe = null;
-  let phi   = 0;
-  let phiOffset = 0;
-  let dragPhi   = 0;
-  let pointerDown = null;
+  const THETA = 0.22;
+
+  // City data for labels
+  const cities = [
+    { lat: 52.3676, lon:   4.9041, text: 'AMSTERDAM' },
+    { lat: 35.6762, lon: 139.6503, text: 'TOKYO'     },
+  ];
+
+  // Create label DOM elements
+  const labelEls = cities.map(c => {
+    const el = document.createElement('div');
+    el.className = 'globe-label';
+    el.textContent = c.text;
+    el.style.opacity = '0';
+    wrap.appendChild(el);
+    return el;
+  });
+
+  // Project lat/lon → {x, y, z} in canvas space given current phi
+  function project(lat, lon, currentPhi, W) {
+    const φ = lat * Math.PI / 180;
+    const λ = lon * Math.PI / 180;
+    // Unit sphere
+    const x0 =  Math.cos(φ) * Math.sin(λ);
+    const y0 = -Math.sin(φ);
+    const z0 =  Math.cos(φ) * Math.cos(λ);
+    // Rotate around Y by -currentPhi
+    const cp = Math.cos(-currentPhi), sp = Math.sin(-currentPhi);
+    const xr = x0 * cp - z0 * sp;
+    const zr = x0 * sp + z0 * cp;
+    // Rotate around X by -THETA
+    const ct = Math.cos(-THETA), st = Math.sin(-THETA);
+    const yr = y0 * ct - zr * st;
+    const zf = y0 * st + zr * ct;
+    const r  = W / 2;
+    return { x: W / 2 + xr * r, y: W / 2 + yr * r, z: zf };
+  }
+
+  let globe = null, phi = 0, phiOffset = 0, dragPhi = 0, pointerDown = null;
 
   function init() {
     const w = canvas.offsetWidth;
@@ -1218,21 +1276,38 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
       width:  w * dpr,
       height: w * dpr,
       phi: 0,
-      theta: 0.22,
+      theta: THETA,
       dark: 1,
-      diffuse: 1.4,
+      diffuse: 1.6,
       mapSamples: 20000,
-      mapBrightness: 4,
-      baseColor:   [0.05, 0.05, 0.18],
-      markerColor: [0.0,  0.32, 1.0],
-      glowColor:   [0.0,  0.20, 0.9],
+      mapBrightness: 7,
+      baseColor:   [0.72, 0.72, 0.80],   // wit/grijs continenten
+      markerColor: [0.0,  0.32, 1.0],    // blauw
+      glowColor:   [0.30, 0.30, 0.40],   // subtiel grijs
       markers: [
-        { location: [52.3676,   4.9041], size: 0.07 },   // Amsterdam
-        { location: [35.6762, 139.6503], size: 0.07 },   // Tokio
+        { location: [52.3676,   4.9041], size: 0.07 },
+        { location: [35.6762, 139.6503], size: 0.07 },
       ],
+      arcs: [
+        { from: [52.3676, 4.9041], to: [35.6762, 139.6503] },
+      ],
+      arcColor:  [0.0, 0.32, 1.0],
+      arcWidth:  1.5,
+      arcHeight: 0.45,
       onRender(state) {
-        state.phi = phi + phiOffset + dragPhi;
+        const curPhi = phi + phiOffset + dragPhi;
+        state.phi = curPhi;
         phi += 0.003;
+
+        // Update label positions
+        const W = canvas.offsetWidth;
+        cities.forEach((c, i) => {
+          const p = project(c.lat, c.lon, curPhi, W);
+          const vis = p.z > 0.08 ? Math.min(1, (p.z - 0.08) * 8) : 0;
+          labelEls[i].style.left    = p.x + 'px';
+          labelEls[i].style.top     = (p.y - 14) + 'px';
+          labelEls[i].style.opacity = vis;
+        });
       },
     });
     setTimeout(() => { canvas.style.opacity = '1'; });
@@ -1246,16 +1321,11 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
     if (pointerDown !== null) dragPhi = (e.clientX - pointerDown) / 280;
   }, { passive: true });
   window.addEventListener('pointerup', () => {
-    if (pointerDown !== null) {
-      phiOffset += dragPhi;
-      dragPhi = 0;
-      pointerDown = null;
-    }
+    if (pointerDown !== null) { phiOffset += dragPhi; dragPhi = 0; pointerDown = null; }
     canvas.style.cursor = 'grab';
   }, { passive: true });
 
-  const ro = new ResizeObserver(init);
-  ro.observe(canvas);
+  new ResizeObserver(init).observe(canvas);
   init();
 })();
 </script>

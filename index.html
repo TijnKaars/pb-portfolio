@@ -1203,20 +1203,15 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
   if (!canvas) return;
 
   const markers = [
-    { location: [37.7595,  -122.4367], size: 0.025 }, // SF
-    { location: [40.7128,   -74.006],  size: 0.025 }, // NYC
-    { location: [35.6762,  139.6503],  size: 0.025 }, // Tokyo
-    { location: [51.5074,   -0.1278],  size: 0.025 }, // London
-    { location: [-33.8688, 151.2093],  size: 0.025 }, // Sydney
-    { location: [-33.9249,  18.4241],  size: 0.025 }, // Cape Town
-    { location: [25.2048,   55.2708],  size: 0.025 }, // Dubai
-    { location: [48.8566,    2.3522],  size: 0.025 }, // Paris
-    { location: [-23.5505, -46.6333],  size: 0.025 }, // São Paulo
-  ];
-
-  const arcs = [
-    { from: [37.7595, -122.4367], to: [35.6762, 139.6503] }, // SF → Tokyo
-    { from: [40.7128,  -74.006],  to: [51.5074,  -0.1278] }, // NYC → London
+    { location: [37.7595,  -122.4367], size: 0.06 }, // SF
+    { location: [40.7128,   -74.006],  size: 0.06 }, // NYC
+    { location: [35.6762,  139.6503],  size: 0.06 }, // Tokyo
+    { location: [51.5074,   -0.1278],  size: 0.06 }, // London
+    { location: [-33.8688, 151.2093],  size: 0.06 }, // Sydney
+    { location: [-33.9249,  18.4241],  size: 0.06 }, // Cape Town
+    { location: [25.2048,   55.2708],  size: 0.06 }, // Dubai
+    { location: [48.8566,    2.3522],  size: 0.06 }, // Paris
+    { location: [-23.5505, -46.6333],  size: 0.06 }, // São Paulo
   ];
 
   // Drag/interaction state — mirrors the React component refs exactly
@@ -1280,14 +1275,9 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
       mapSamples: 16000,
       mapBrightness: 6,
       baseColor:       [0.3, 0.3, 0.3],
-      markerColor:     [0.3, 0.45, 0.85],
+      markerColor:     [0.2, 0.7, 1],
       glowColor:       [0.15, 0.15, 0.4],
-      markerElevation: 0.01,
       markers,
-      arcs,
-      arcColor:  [0.3, 0.45, 0.85],
-      arcWidth:  0.5,
-      arcHeight: 0.25,
       opacity:   1,
       onRender(state) {
         if (!isPaused) {

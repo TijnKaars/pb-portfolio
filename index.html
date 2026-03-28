@@ -270,6 +270,20 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   touch-action: none;
   display: block;
 }
+.globe-label {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -130%);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
 
 /* ======== MARQUEE ======== */
 .marquee-wrapper {
@@ -682,6 +696,15 @@ footer {
 
   <div class="globe-wrap">
     <canvas id="globe-canvas"></canvas>
+    <span class="globe-label" data-city="sf">San Francisco</span>
+    <span class="globe-label" data-city="nyc">New York</span>
+    <span class="globe-label" data-city="tokyo">Tokyo</span>
+    <span class="globe-label" data-city="london">London</span>
+    <span class="globe-label" data-city="sydney">Sydney</span>
+    <span class="globe-label" data-city="capetown">Cape Town</span>
+    <span class="globe-label" data-city="dubai">Dubai</span>
+    <span class="globe-label" data-city="paris">Paris</span>
+    <span class="globe-label" data-city="saopaulo">São Paulo</span>
   </div>
 
 </section>
@@ -1203,16 +1226,44 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
   if (!canvas) return;
 
   const markers = [
-    { location: [37.7595,  -122.4367], size: 0.06 }, // SF
-    { location: [40.7128,   -74.006],  size: 0.06 }, // NYC
-    { location: [35.6762,  139.6503],  size: 0.06 }, // Tokyo
-    { location: [51.5074,   -0.1278],  size: 0.06 }, // London
-    { location: [-33.8688, 151.2093],  size: 0.06 }, // Sydney
-    { location: [-33.9249,  18.4241],  size: 0.06 }, // Cape Town
-    { location: [25.2048,   55.2708],  size: 0.06 }, // Dubai
-    { location: [48.8566,    2.3522],  size: 0.06 }, // Paris
-    { location: [-23.5505, -46.6333],  size: 0.06 }, // São Paulo
+    { location: [37.7595,  -122.4367], size: 0.025, city: "sf"       },
+    { location: [40.7128,   -74.006],  size: 0.025, city: "nyc"      },
+    { location: [35.6762,  139.6503],  size: 0.025, city: "tokyo"    },
+    { location: [51.5074,   -0.1278],  size: 0.025, city: "london"   },
+    { location: [-33.8688, 151.2093],  size: 0.025, city: "sydney"   },
+    { location: [-33.9249,  18.4241],  size: 0.025, city: "capetown" },
+    { location: [25.2048,   55.2708],  size: 0.025, city: "dubai"    },
+    { location: [48.8566,    2.3522],  size: 0.025, city: "paris"    },
+    { location: [-23.5505, -46.6333],  size: 0.025, city: "saopaulo" },
   ];
+
+  // Collect label elements
+  const labelEls = {};
+  document.querySelectorAll('.globe-label').forEach(el => {
+    labelEls[el.dataset.city] = el;
+  });
+
+  // Convert lat/lng to unit 3D vector (cobe coordinate system)
+  function toXYZ(lat, lng) {
+    const phi   = (90 - lat)  * (Math.PI / 180);
+    const theta = (lng + 180) * (Math.PI / 180);
+    return [
+      -Math.sin(phi) * Math.cos(theta),
+       Math.cos(phi),
+       Math.sin(phi) * Math.sin(theta),
+    ];
+  }
+
+  // Rotate a 3D point by globe phi (Y-axis) and theta (X-axis)
+  function rotate(x, y, z, globePhi, globeTheta) {
+    // rotate around X by globeTheta
+    const y1 =  y * Math.cos(globeTheta) - z * Math.sin(globeTheta);
+    const z1 =  y * Math.sin(globeTheta) + z * Math.cos(globeTheta);
+    // rotate around Y by -globePhi
+    const x2 =  x * Math.cos(-globePhi) + z1 * Math.sin(-globePhi);
+    const z2 = -x * Math.sin(-globePhi) + z1 * Math.cos(-globePhi);
+    return [x2, y1, z2];
+  }
 
   // Drag/interaction state — mirrors the React component refs exactly
   let pointerInteracting = null;
@@ -1291,8 +1342,25 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
           if      (thetaOffset < tMin) thetaOffset += (tMin - thetaOffset) * 0.1;
           else if (thetaOffset > tMax) thetaOffset += (tMax - thetaOffset) * 0.1;
         }
-        state.phi   = phi + phiOffset   + dragOffset.phi;
-        state.theta = theta + thetaOffset + dragOffset.theta;
+        const globePhi   = phi + phiOffset   + dragOffset.phi;
+        const globeTheta = theta + thetaOffset + dragOffset.theta;
+        state.phi   = globePhi;
+        state.theta = globeTheta;
+
+        // Position labels — project each marker to 2D canvas space
+        const r = width / 2;  // globe radius in CSS px
+        markers.forEach(m => {
+          const el = labelEls[m.city];
+          if (!el) return;
+          const [x0, y0, z0] = toXYZ(m.location[0], m.location[1]);
+          const [rx, ry, rz] = rotate(x0, y0, z0, globePhi, globeTheta);
+          const visible = rz > 0.05;  // front face only
+          el.style.opacity = visible ? '1' : '0';
+          if (visible) {
+            el.style.left = (r + rx * r) + 'px';
+            el.style.top  = (r - ry * r) + 'px';
+          }
+        });
       },
     });
 

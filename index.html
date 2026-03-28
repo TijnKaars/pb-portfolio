@@ -1213,6 +1213,7 @@ document.querySelectorAll('.trait-card').forEach(card => {
 
 <script type="module">
 // ======== GLOBE ========
+// Uses standard cobe onRender API (globe.update() does not exist in 0.6.3)
 import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
 
 (function () {
@@ -1220,178 +1221,108 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
   const wrap   = canvas && canvas.parentElement;
   if (!canvas || !wrap) return;
 
-  // Config
-  const SPEED   = 0.003;
-  const THETA   = 0.2;
+  const THETA = 0.3;
   const MARKERS = [
-    { id: 'amsterdam', location: [52.3676,   4.9041], label: 'AMSTERDAM' },
-    { id: 'tokyo',     location: [35.6762, 139.6503], label: 'TOKYO'     },
-  ];
-  const ARCS = [
-    { id: 'ams-tokyo', from: [52.3676, 4.9041], to: [35.6762, 139.6503] },
+    { location: [52.3676,   4.9041], label: 'AMSTERDAM' },
+    { location: [35.6762, 139.6503], label: 'TOKYO'     },
   ];
 
-  // Create label elements
-  const labelEls = {};
-  MARKERS.forEach(m => {
+  // Label elements
+  const labelEls = MARKERS.map(m => {
     const el = document.createElement('div');
     el.className = 'globe-label';
     el.textContent = m.label;
     el.style.opacity = '0';
     el.style.position = 'absolute';
     wrap.appendChild(el);
-    labelEls[m.id] = el;
+    return el;
   });
 
-  // State (mirrors React refs)
-  let pointerInteracting = null;
-  let lastPointer = null;
-  let dragOffset = { phi: 0, theta: 0 };
-  let velocity   = { phi: 0, theta: 0 };
-  let phiOffset   = 0;
-  let thetaOffset = 0;
-  let isPaused    = false;
-  let globe       = null;
-  let animId      = null;
-  let phi         = 0;
+  // Drag state
+  let pointerDown = null, lastX = 0;
+  let phiOffset = 0, dragDelta = 0;
+  let velPhi = 0;
+  let isPaused = false;
 
-  function init() {
-    const width = canvas.offsetWidth;
-    if (width === 0 || globe) return;
+  canvas.addEventListener('pointerdown', e => {
+    pointerDown = e.clientX; lastX = e.clientX;
+    canvas.style.cursor = 'grabbing';
+    isPaused = true;
+  });
+  window.addEventListener('pointermove', e => {
+    if (pointerDown === null) return;
+    velPhi    = (e.clientX - lastX) / 300;
+    dragDelta = (e.clientX - pointerDown) / 300;
+    lastX = e.clientX;
+  }, { passive: true });
+  window.addEventListener('pointerup', () => {
+    if (pointerDown !== null) { phiOffset += dragDelta; dragDelta = 0; pointerDown = null; }
+    canvas.style.cursor = 'grab';
+    isPaused = false;
+  }, { passive: true });
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    globe = createGlobe(canvas, {
-      devicePixelRatio: dpr,
-      width,
-      height: width,
-      phi: 0,
-      theta: THETA,
-      dark: 1,
-      diffuse: 1.5,
-      mapSamples: 16000,
-      mapBrightness: 6,
-      baseColor:   [0.78, 0.78, 0.84],
-      markerColor: [0.00, 0.32, 1.00],
-      glowColor:   [0.22, 0.22, 0.36],
-      markerElevation: 0.01,
-      markers: MARKERS.map(m => ({ location: m.location, size: 0.06, id: m.id })),
-      arcs:    ARCS.map(a => ({ from: a.from, to: a.to, id: a.id })),
-      arcColor:  [0.00, 0.32, 1.00],
-      arcWidth:  1.5,
-      arcHeight: 0.35,
-      opacity: 0.8,
-    });
-
-    function animate() {
-      if (!isPaused) {
-        phi += SPEED;
-
-        const maxV = 0.15;
-        if (Math.abs(velocity.phi) > 0.0001 || Math.abs(velocity.theta) > 0.0001) {
-          phiOffset   += velocity.phi;
-          thetaOffset += velocity.theta;
-          velocity.phi   *= 0.95;
-          velocity.theta *= 0.95;
-        }
-        const tMin = -0.4, tMax = 0.4;
-        if      (thetaOffset < tMin) thetaOffset += (tMin - thetaOffset) * 0.1;
-        else if (thetaOffset > tMax) thetaOffset += (tMax - thetaOffset) * 0.1;
-      }
-
-      const curPhi   = phi + phiOffset + dragOffset.phi;
-      const curTheta = THETA + thetaOffset + dragOffset.theta;
-
-      globe.update({
-        phi:   curPhi,
-        theta: curTheta,
-        dark: 1,
-        mapBrightness: 6,
-        markerColor: [0.00, 0.32, 1.00],
-        baseColor:   [0.78, 0.78, 0.84],
-        arcColor:    [0.00, 0.32, 1.00],
-        markerElevation: 0.01,
-        markers: MARKERS.map(m => ({ location: m.location, size: 0.06, id: m.id })),
-        arcs:    ARCS.map(a => ({ from: a.from, to: a.to, id: a.id })),
-      });
-
-      // Update label positions via 3D projection
-      updateLabels(curPhi, curTheta, width);
-
-      animId = requestAnimationFrame(animate);
-    }
-    animate();
-    setTimeout(() => { canvas.style.opacity = '1'; });
-  }
-
-  // --- 3D projection matching cobe's GLSL ---
-  function latLonToVec(lat, lon) {
+  // Projection
+  function ll2v(lat, lon) {
     const la = lat * Math.PI / 180, lo = lon * Math.PI / 180;
     return [Math.cos(la) * Math.sin(lo), -Math.sin(la), Math.cos(la) * Math.cos(lo)];
   }
-
-  function project(vec, phi, theta, W) {
-    let [x, y, z] = vec;
-    // cobe: rotate(xz, phi)  →  x'=x*cos+z*sin, z'=-x*sin+z*cos
-    const cp = Math.cos(phi), sp = Math.sin(phi);
-    const xr =  x * cp + z * sp;
-    const zt = -x * sp + z * cp;
-    // cobe: rotate(yz, theta)
-    const ct = Math.cos(theta), st = Math.sin(theta);
+  function project(v, curPhi, W) {
+    let [x, y, z] = v;
+    const cp = Math.cos(curPhi), sp = Math.sin(curPhi);
+    const xr =  x * cp + z * sp, zt = -x * sp + z * cp;
+    const ct = Math.cos(THETA),   st = Math.sin(THETA);
     const yr =  y * ct + zt * st;
     const zf = -y * st + zt * ct;
     const R  = W / 2;
     return { sx: W / 2 + xr * R, sy: W / 2 + yr * R, depth: zf };
   }
 
-  function updateLabels(curPhi, curTheta, W) {
-    MARKERS.forEach(m => {
-      const p   = project(latLonToVec(m.location[0], m.location[1]), curPhi, curTheta, W);
-      const vis = p.depth > 0.15 ? Math.min(1, (p.depth - 0.15) * 5) : 0;
-      const el  = labelEls[m.id];
-      el.style.opacity = vis;
-      el.style.left    = p.sx + 'px';
-      el.style.top     = (p.sy - 16) + 'px';
+  // Init globe with onRender (the ONLY animation API in cobe 0.6.3)
+  function init() {
+    const W = canvas.offsetWidth;
+    if (!W) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    let phi = 0;
+
+    const globe = createGlobe(canvas, {
+      devicePixelRatio: dpr,
+      width:  W * dpr,
+      height: W * dpr,
+      phi: 0,
+      theta: THETA,
+      dark: 1,
+      diffuse: 1.2,
+      mapSamples: 16000,
+      mapBrightness: 6,
+      baseColor:   [0.78, 0.78, 0.84],
+      markerColor: [0.00, 0.32, 1.00],
+      glowColor:   [0.22, 0.22, 0.36],
+      markers: MARKERS.map(m => ({ location: m.location, size: 0.06 })),
+      onRender(state) {
+        if (!isPaused) {
+          phiOffset += velPhi;
+          velPhi    *= 0.93;
+          phi       += 0.003;
+        }
+        const curPhi = phi + phiOffset + dragDelta;
+        state.phi   = curPhi;
+        state.theta = THETA;
+
+        // Update labels
+        MARKERS.forEach((m, i) => {
+          const p   = project(ll2v(m.location[0], m.location[1]), curPhi, W);
+          const vis = p.depth > 0.15 ? Math.min(1, (p.depth - 0.15) * 5) : 0;
+          labelEls[i].style.opacity = vis;
+          labelEls[i].style.left   = p.sx + 'px';
+          labelEls[i].style.top    = (p.sy - 16) + 'px';
+        });
+      },
     });
+
+    canvas.style.opacity = '1';
   }
 
-  // --- Pointer events (exact React translation) ---
-  canvas.addEventListener('pointerdown', e => {
-    pointerInteracting = { x: e.clientX, y: e.clientY };
-    canvas.style.cursor = 'grabbing';
-    isPaused = true;
-  });
-
-  window.addEventListener('pointermove', e => {
-    if (pointerInteracting === null) return;
-    const dx = e.clientX - pointerInteracting.x;
-    const dy = e.clientY - pointerInteracting.y;
-    dragOffset = { phi: dx / 300, theta: dy / 1000 };
-    const now = Date.now();
-    if (lastPointer) {
-      const dt   = Math.max(now - lastPointer.t, 1);
-      const maxV = 0.15;
-      velocity = {
-        phi:   Math.max(-maxV, Math.min(maxV, ((e.clientX - lastPointer.x) / dt) * 0.3)),
-        theta: Math.max(-maxV, Math.min(maxV, ((e.clientY - lastPointer.y) / dt) * 0.08)),
-      };
-    }
-    lastPointer = { x: e.clientX, y: e.clientY, t: now };
-  }, { passive: true });
-
-  window.addEventListener('pointerup', () => {
-    if (pointerInteracting !== null) {
-      phiOffset   += dragOffset.phi;
-      thetaOffset += dragOffset.theta;
-      dragOffset   = { phi: 0, theta: 0 };
-      lastPointer  = null;
-    }
-    pointerInteracting = null;
-    canvas.style.cursor = 'grab';
-    isPaused = false;
-  }, { passive: true });
-
-  // --- Bootstrap ---
   if (canvas.offsetWidth > 0) {
     init();
   } else {

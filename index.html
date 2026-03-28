@@ -2123,197 +2123,166 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 </script>
 
-<!-- ======== 3D GLOBE (Three.js) ======== -->
-<script type="module">
-import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-
+<!-- ======== 3D GLOBE (pure Canvas 2D — geen externe library) ======== -->
+<script>
 (function initGlobe() {
-  const wrap   = document.querySelector('.hero-globe-wrap');
   const canvas = document.getElementById('globe-canvas');
-  if (!wrap || !canvas) return;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const S = 400; // logical size
+  canvas.width  = S * DPR;
+  canvas.height = S * DPR;
+  canvas.style.width  = S + 'px';
+  canvas.style.height = S + 'px';
+  ctx.scale(DPR, DPR);
 
-  // ── Renderer ──────────────────────────────────────────────
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x000000, 0);
+  const CX = S / 2, CY = S / 2, R = 155;
 
-  // ── Scene / Camera ────────────────────────────────────────
-  const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-  camera.position.z = 2.75;
-
-  function onResize() {
-    const w = canvas.clientWidth  || 400;
-    const h = canvas.clientHeight || 400;
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-  }
-  onResize();
-  window.addEventListener('resize', onResize);
-
-  // ── All globe objects live in one group (rotates together) ─
-  const globe = new THREE.Group();
-  scene.add(globe);
-
-  const R = 1;
-
-  // Wireframe sphere — white technical look
-  globe.add(new THREE.Mesh(
-    new THREE.SphereGeometry(R, 40, 28),
-    new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.14 })
-  ));
-
-  // Soft glow halo (slightly larger, backside)
-  globe.add(new THREE.Mesh(
-    new THREE.SphereGeometry(R * 1.09, 32, 32),
-    new THREE.MeshBasicMaterial({ color: 0x88aaff, transparent: true, opacity: 0.06, side: THREE.BackSide })
-  ));
-
-  // ── Helpers ───────────────────────────────────────────────
-  function ll(lat, lon, r = R) {
-    const φ = (90 - lat) * Math.PI / 180;
-    const λ = (lon + 180) * Math.PI / 180;
-    return new THREE.Vector3(
-      -r * Math.sin(φ) * Math.cos(λ),
-       r * Math.cos(φ),
-       r * Math.sin(φ) * Math.sin(λ)
-    );
-  }
-
-  function slerp(a, b, t) {
-    const Ω = a.angleTo(b);
-    if (Ω < 1e-4) return a.clone().lerp(b, t).normalize();
-    const s = Math.sin(Ω);
-    return a.clone().multiplyScalar(Math.sin((1 - t) * Ω) / s)
-           .add(b.clone().multiplyScalar(Math.sin(t * Ω) / s));
-  }
-
-  // ── Cities ────────────────────────────────────────────────
-  const AMS = ll(52.37,  4.90).normalize();
-  const TKY = ll(35.68, 139.65).normalize();
-
-  function addDot(v) {
-    const m = new THREE.Mesh(
-      new THREE.SphereGeometry(0.022, 10, 10),
-      new THREE.MeshBasicMaterial({ color: 0xffffff })
-    );
-    m.position.copy(v.clone().multiplyScalar(R + 0.008));
-    globe.add(m);
-    return m;
-  }
-
-  function addRing(v) {
-    const mat = new THREE.MeshBasicMaterial({
-      color: 0xffffff, transparent: true, opacity: 0.4, side: THREE.DoubleSide
-    });
-    const ring = new THREE.Mesh(new THREE.RingGeometry(0.03, 0.048, 36), mat);
-    const p = v.clone().multiplyScalar(R + 0.01);
-    ring.position.copy(p);
-    ring.lookAt(p.clone().multiplyScalar(3));
-    globe.add(ring);
-    return ring;
-  }
-
-  addDot(AMS); addDot(TKY);
-  const amsRing = addRing(AMS);
-  const tkyRing = addRing(TKY);
-
-  // Local positions of city centers (for label projection)
-  const amsPosL = AMS.clone().multiplyScalar(R + 0.01);
-  const tkyPosL = TKY.clone().multiplyScalar(R + 0.01);
-
-  // ── Great-circle arc AMS → TKY ───────────────────────────
-  const N = 160;
-  const ARC_H = 0.30;
-  const arcPts = Array.from({ length: N + 1 }, (_, i) => {
-    const t = i / N;
-    return slerp(AMS, TKY, t).multiplyScalar(R + Math.sin(t * Math.PI) * ARC_H);
-  });
-
-  // Dim background arc
-  globe.add(new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints(arcPts),
-    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22 })
-  ));
-
-  // Bright traveling dash (pre-allocated buffer)
-  const DASH_N = 30; // number of points in the bright segment
-  const dashBuf = new Float32Array(DASH_N * 3);
-  const dashAttr = new THREE.BufferAttribute(dashBuf, 3);
-  const dashGeo = new THREE.BufferGeometry();
-  dashGeo.setAttribute('position', dashAttr);
-  dashGeo.setDrawRange(0, 0);
-  globe.add(new THREE.Line(dashGeo, new THREE.LineBasicMaterial({ color: 0xffffff })));
-
-  // Traveling dot at arc head
-  const dot = new THREE.Mesh(
-    new THREE.SphereGeometry(0.026, 8, 8),
-    new THREE.MeshBasicMaterial({ color: 0xffffff })
-  );
-  globe.add(dot);
-
-  // ── Labels ────────────────────────────────────────────────
+  // Hide HTML labels (we draw them on canvas instead)
   const lblAms = document.getElementById('globe-lbl-ams');
   const lblTky = document.getElementById('globe-lbl-tky');
+  if (lblAms) lblAms.style.display = 'none';
+  if (lblTky) lblTky.style.display = 'none';
 
-  function projectLabel(el, localPos) {
-    const wp = localPos.clone();
-    globe.localToWorld(wp);
-    const ndc = wp.project(camera);
-    const w = canvas.clientWidth  || 400;
-    const h = canvas.clientHeight || 400;
-    const x = ( ndc.x * 0.5 + 0.5) * w;
-    const y = (-ndc.y * 0.5 + 0.5) * h;
-    el.style.left    = x + 'px';
-    el.style.top     = y + 'px';
-    el.style.opacity = ndc.z < 1 ? '1' : '0';
-    el.style.transform = 'translate(10px, -50%)';
+  // ── Maths ─────────────────────────────────────────────────
+  // lat/lon → unit 3D vector (Y-up, Z towards viewer at θ=0)
+  function ll3(lat, lon) {
+    const φ = lat * Math.PI / 180, λ = lon * Math.PI / 180;
+    return [Math.cos(φ) * Math.sin(λ), Math.sin(φ), Math.cos(φ) * Math.cos(λ)];
+  }
+  function rotY(p, θ) {
+    return [p[0]*Math.cos(θ) - p[2]*Math.sin(θ), p[1], p[0]*Math.sin(θ) + p[2]*Math.cos(θ)];
+  }
+  function proj(p) { return [CX + p[0]*R, CY - p[1]*R, p[2]]; } // [sx, sy, z]
+
+  function slerp(a, b, t) {
+    const dot = Math.min(1, Math.max(-1, a[0]*b[0]+a[1]*b[1]+a[2]*b[2]));
+    const Ω = Math.acos(dot);
+    if (Ω < 1e-4) return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1]), a[2]+t*(b[2]-a[2])];
+    const s = Math.sin(Ω);
+    const sa = Math.sin((1-t)*Ω)/s, sb = Math.sin(t*Ω)/s;
+    return [a[0]*sa+b[0]*sb, a[1]*sa+b[1]*sb, a[2]*sa+b[2]*sb];
   }
 
-  // ── Animation ─────────────────────────────────────────────
-  let arcT  = 0;
-  let pulse = 0;
+  // ── Arc precomputation ────────────────────────────────────
+  const AMS = ll3(52.37,   4.90);
+  const TKY = ll3(35.68, 139.65);
+  const N = 120, ARC_H = 0.30;
+  const arcBase = Array.from({length: N+1}, (_, i) => {
+    const t = i / N;
+    const pt = slerp(AMS, TKY, t);
+    const h = 1 + Math.sin(t * Math.PI) * ARC_H;
+    return [pt[0]*h, pt[1]*h, pt[2]*h];
+  });
 
-  function tick() {
-    requestAnimationFrame(tick);
-
-    pulse += 0.018;
-    arcT   = (arcT + 0.0022) % 1;
-
-    // Rotate globe
-    globe.rotation.y += 0.0016;
-
-    // Pulsing rings
-    const s = 0.9 + Math.sin(pulse) * 0.12;
-    amsRing.scale.setScalar(s);
-    tkyRing.scale.setScalar(0.9 + Math.sin(pulse + 1.1) * 0.12);
-
-    // Traveling dash: fill dashBuf with DASH_N points starting at arcT
-    const head = Math.floor(arcT * N);
-    let count = 0;
-    for (let i = 0; i < DASH_N; i++) {
-      const idx = (head - i + N + 1) % (N + 1);
-      const p   = arcPts[idx];
-      dashBuf[count * 3]     = p.x;
-      dashBuf[count * 3 + 1] = p.y;
-      dashBuf[count * 3 + 2] = p.z;
-      count++;
+  // ── Draw helpers ──────────────────────────────────────────
+  function drawGridLine(pts, α) {
+    ctx.beginPath();
+    let pen = false;
+    for (const p of pts) {
+      const [sx, sy, z] = proj(p);
+      if (z > 0) { pen ? ctx.lineTo(sx, sy) : ctx.moveTo(sx, sy); pen = true; }
+      else { pen = false; }
     }
-    dashAttr.needsUpdate = true;
-    dashGeo.setDrawRange(0, DASH_N);
-
-    // Dot at arc head
-    dot.position.copy(arcPts[head]);
-
-    // Label positions
-    projectLabel(lblAms, amsPosL);
-    projectLabel(lblTky, tkyPosL);
-
-    renderer.render(scene, camera);
+    ctx.strokeStyle = `rgba(255,255,255,${α})`;
+    ctx.lineWidth = 0.6;
+    ctx.stroke();
   }
 
-  tick();
+  function cityDot(lat, lon, θ, label, offX, offY) {
+    const p = proj(rotY(ll3(lat, lon), θ));
+    if (p[2] <= 0) return;
+    // Glow
+    const g = ctx.createRadialGradient(p[0],p[1],0, p[0],p[1],14);
+    g.addColorStop(0, 'rgba(255,255,255,0.45)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.beginPath(); ctx.arc(p[0],p[1],14,0,Math.PI*2);
+    ctx.fillStyle = g; ctx.fill();
+    // Dot
+    ctx.beginPath(); ctx.arc(p[0],p[1],4.5,0,Math.PI*2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    // Label
+    ctx.font = 'bold 9.5px DM Sans,sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillText(label.toUpperCase(), p[0]+offX, p[1]+offY);
+  }
+
+  // ── Animation state ───────────────────────────────────────
+  // Start with both cities roughly centred
+  let θ = -(4.90 + 139.65) / 2 * Math.PI / 180;
+  let arcT = 0, pulse = 0;
+
+  function frame() {
+    ctx.clearRect(0, 0, S, S);
+
+    // Outer circle
+    ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1; ctx.stroke();
+
+    // Wireframe grid (lat + lon lines, only front side)
+    for (let lat = -75; lat <= 75; lat += 15) {
+      const pts = [];
+      for (let lon = -180; lon <= 180; lon += 3) pts.push(rotY(ll3(lat, lon), θ));
+      drawGridLine(pts, 0.13);
+    }
+    for (let lon = 0; lon < 360; lon += 20) {
+      const pts = [];
+      for (let lat = -90; lat <= 90; lat += 3) pts.push(rotY(ll3(lat, lon), θ));
+      drawGridLine(pts, 0.13);
+    }
+
+    // Dim full arc
+    ctx.beginPath();
+    let penDown = false;
+    for (let i = 0; i <= N; i++) {
+      const p = proj(rotY(arcBase[i], θ));
+      if (p[2] > -0.2) { penDown ? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1]); penDown = true; }
+      else penDown = false;
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.lineWidth = 1.5; ctx.stroke();
+
+    // Bright traveling dash (last 25 points before head)
+    const head = Math.floor(arcT * N);
+    const DASH = 25;
+    ctx.beginPath();
+    for (let i = DASH; i >= 0; i--) {
+      const idx = (head - i + N + 1) % (N + 1);
+      const p = proj(rotY(arcBase[idx], θ));
+      const alpha = 1 - i / DASH;
+      if (i === DASH) ctx.moveTo(p[0], p[1]);
+      else ctx.lineTo(p[0], p[1]);
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.lineWidth = 2.2; ctx.stroke();
+
+    // Moving dot at head
+    const headPt = proj(rotY(arcBase[head], θ));
+    if (headPt[2] > -0.2) {
+      const g2 = ctx.createRadialGradient(headPt[0],headPt[1],0, headPt[0],headPt[1],16);
+      g2.addColorStop(0, 'rgba(255,255,255,0.7)');
+      g2.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.beginPath(); ctx.arc(headPt[0],headPt[1],16,0,Math.PI*2);
+      ctx.fillStyle = g2; ctx.fill();
+      ctx.beginPath(); ctx.arc(headPt[0],headPt[1],5,0,Math.PI*2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+    }
+
+    // City labels
+    cityDot(52.37,   4.90, θ, 'Amsterdam',  9, -10);
+    cityDot(35.68, 139.65, θ, 'Tokyo',       9, -10);
+
+    // Animate
+    θ     += 0.0014;
+    arcT   = (arcT + 0.0025) % 1;
+    pulse += 0.02;
+
+    requestAnimationFrame(frame);
+  }
+
+  frame();
 })();
 </script>
 </body>

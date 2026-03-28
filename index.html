@@ -367,6 +367,46 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 }
 
 /* ======== WIE BEN IK ======== */
+.wie-intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 3rem;
+  align-items: start;
+}
+.wie-intro-grid .section-header {
+  max-width: none;
+  margin-bottom: 2rem;
+}
+.wie-photo-card {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #000;
+  align-self: stretch;
+  min-height: 420px;
+}
+.wie-photo-card img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
+}
+.wie-photo-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+}
+.wie-photo-card::after {
+  content: '';
+  position: absolute;
+  bottom: -14px; left: 50%;
+  transform: translateX(-50%);
+  width: 55%; height: 24px;
+  background: rgba(0,82,255,0.5);
+  filter: blur(20px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
 .wiebeik-text p {
   font-size: .95rem; color: var(--text-sub);
   line-height: 1.8; margin-bottom: 1.2rem;
@@ -791,6 +831,8 @@ footer {
   .expect-box        { position: static; }
   .personality-split { grid-template-columns: 1fr; }
   .testimonials-row  { grid-template-columns: 1fr; }
+  .wie-intro-grid    { grid-template-columns: 1fr; }
+  .wie-photo-card    { min-height: 320px; }
 }
 @media (max-width: 768px) {
   .section      { padding: 4rem 5vw; }
@@ -913,21 +955,33 @@ footer {
 <section id="wie-ben-ik" class="section">
   <div class="section-inner">
 
-    <div class="section-header reveal">
-      <span class="section-label">01 — Wie ben ik?</span>
-      <div class="section-divider"></div>
-      <h2 class="section-title">
-        <span class="title-dim">Meer dan alleen</span><br>
-        <span class="title-bright">een CV.</span>
-      </h2>
-    </div>
+    <!-- Intro: tekst links, foto rechts -->
+    <div class="wie-intro-grid">
 
-    <!-- Intro tekst -->
-    <div class="wiebeik-text reveal">
-      <p>Mijn naam is <strong>Tijn Kaars</strong>, 22 jaar oud en student Commerciële Economie met specialisatie Digital Marketing aan de Hogeschool van Amsterdam. Ambitieus, analytisch en competitief — dat zijn woorden die mij goed omschrijven, én die ik terugzie in zowel sport als studie.</p>
-      <p>Sport is een rode draad in mijn leven. Als aanvoerder van mijn voetbalteam heb ik geleerd dat resultaten niet vanzelf komen: je hebt discipline, focus en een scherpe instelling nodig. Die mentaliteit neem ik mee naar de werkvloer. Ik wil niet alleen meedoen — ik wil het goed doen.</p>
-      <p>Tijdens mijn stage bij <strong>TBWA\NEBOKO</strong>, een van de grootste reclamebureaus van Nederland, heb ik de strategieafdeling van binnenuit meegemaakt. Van consumenteninzicht naar positionering, van briefing naar creatieve strategie — het was een bevestiging dat dit het vakgebied is waar ik wil groeien.</p>
-      <p><strong>Mijn doel?</strong> Doorgroeien als strateeg in de wereld van marketing, met een focus op de sportsector.</p>
+      <div>
+        <div class="section-header reveal">
+          <span class="section-label">01 — Wie ben ik?</span>
+          <div class="section-divider"></div>
+          <h2 class="section-title">
+            <span class="title-dim">Meer dan alleen</span><br>
+            <span class="title-bright">een CV.</span>
+          </h2>
+        </div>
+
+        <div class="wiebeik-text reveal">
+          <p>Mijn naam is <strong>Tijn Kaars</strong>, 22 jaar oud en student Commerciële Economie met specialisatie Digital Marketing aan de Hogeschool van Amsterdam. Ambitieus, analytisch en competitief — dat zijn woorden die mij goed omschrijven, én die ik terugzie in zowel sport als studie.</p>
+          <p>Sport is een rode draad in mijn leven. Als aanvoerder van mijn voetbalteam heb ik geleerd dat resultaten niet vanzelf komen: je hebt discipline, focus en een scherpe instelling nodig. Die mentaliteit neem ik mee naar de werkvloer. Ik wil niet alleen meedoen — ik wil het goed doen.</p>
+          <p>Tijdens mijn stage bij <strong>TBWA\NEBOKO</strong>, een van de grootste reclamebureaus van Nederland, heb ik de strategieafdeling van binnenuit meegemaakt. Van consumenteninzicht naar positionering, van briefing naar creatieve strategie — het was een bevestiging dat dit het vakgebied is waar ik wil groeien.</p>
+          <p><strong>Mijn doel?</strong> Doorgroeien als strateeg in de wereld van marketing, met een focus op de sportsector.</p>
+        </div>
+      </div>
+
+      <!-- Foto kaart -->
+      <div class="wie-photo-card reveal">
+        <img src="profielfoto.jpg" alt="Tijn Kaars">
+        <div class="wie-photo-overlay"></div>
+      </div>
+
     </div>
 
     <!-- Eigenschap tegels — flip on hover -->

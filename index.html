@@ -367,20 +367,16 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 }
 
 /* ======== WIE BEN IK ======== */
-.wiebeik-grid {
-  display: grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: 5rem; align-items: start;
-}
 .wiebeik-text p {
   font-size: .95rem; color: var(--text-sub);
   line-height: 1.8; margin-bottom: 1.2rem;
+  max-width: 820px;
 }
 
-/* Trait cards — asymmetric bento */
+/* Trait cards — 3-koloms grid */
 .trait-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: .75rem; margin-top: 2.5rem;
 }
 .trait-card {
@@ -391,10 +387,32 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   transform-style: preserve-3d;
   cursor: default;
 }
-.trait-card:first-child { grid-column: span 2; }
 .trait-card:hover {
   border-color: var(--blue-border);
   background: var(--bg-hover);
+}
+
+/* Personality split — 2-koloms */
+.personality-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: start;
+  margin-top: 3rem;
+}
+.personality-split-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Testimonials rij */
+.testimonials-section { margin-top: 3.5rem; }
+.testimonials-section .section-label { display: block; margin-bottom: 1.5rem; }
+.testimonials-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
 }
 .trait-num {
   display: block;
@@ -449,22 +467,15 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 .reveal.in .trait-bar-fill { width: var(--pct); }
 
 /* MBTI cards */
-.mbti-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-top: 1.75rem;
-}
 .mbti-card {
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 1.5rem 1.25rem 1.25rem;
+  padding: 1.25rem 1.25rem 1rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  text-align: center;
-  gap: .75rem;
+  gap: 1rem;
   transition: border-color .3s, background .3s;
 }
 .mbti-card:hover {
@@ -472,10 +483,12 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   border-color: rgba(0,82,255,0.3);
 }
 .mbti-card img {
-  width: 120px;
-  height: 120px;
+  width: 72px;
+  height: 72px;
   object-fit: contain;
+  flex-shrink: 0;
 }
+.mbti-card-info { display: flex; flex-direction: column; gap: .3rem; }
 .mbti-card-label {
   font-size: .7rem;
   font-weight: 700;
@@ -484,7 +497,7 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   color: var(--blue);
 }
 .mbti-card-title {
-  font-size: 1rem;
+  font-size: .95rem;
   font-weight: 700;
   color: var(--text);
   margin: 0;
@@ -494,9 +507,6 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   color: var(--text-sub);
   line-height: 1.6;
   margin: 0;
-}
-@media (max-width: 600px) {
-  .mbti-cards { grid-template-columns: 1fr; }
 }
 
 /* Testimonials */
@@ -690,24 +700,26 @@ footer {
 
 /* ======== RESPONSIVE ======== */
 @media (max-width: 1024px) {
-  .wiebeik-grid { grid-template-columns: 1fr; gap: 3rem; }
-  .watwil-grid  { grid-template-columns: 1fr; gap: 3rem; }
-  .expect-box   { position: static; }
+  .watwil-grid       { grid-template-columns: 1fr; gap: 3rem; }
+  .expect-box        { position: static; }
+  .personality-split { grid-template-columns: 1fr; }
+  .testimonials-row  { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
-  .section          { padding: 4rem 5vw; }
-  .hero-name        { font-size: clamp(3.5rem, 16vw, 6rem); }
-  .drive-grid       { grid-template-columns: 1fr; }
-  .skill-row        { grid-template-columns: 1fr; gap: 1rem; }
-  .nav-links        { display: none; }
-  .nav-toggle       { display: flex; }
-  .cta-block        { padding: 3rem 2rem; }
+  .section      { padding: 4rem 5vw; }
+  .hero-name    { font-size: clamp(3.5rem, 16vw, 6rem); }
+  .drive-grid   { grid-template-columns: 1fr; }
+  .skill-row    { grid-template-columns: 1fr; gap: 1rem; }
+  .nav-links    { display: none; }
+  .nav-toggle   { display: flex; }
+  .cta-block    { padding: 3rem 2rem; }
+  .trait-grid   { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 600px) {
-  .trait-grid { grid-template-columns: 1fr; }
-  .trait-card:first-child { grid-column: span 1; }
-  .hero-cta { flex-direction: column; align-items: center; }
-  footer { flex-direction: column; gap: 1rem; text-align: center; }
+  .trait-grid  { grid-template-columns: 1fr; }
+  .hero-cta    { flex-direction: column; align-items: center; }
+  footer       { flex-direction: column; gap: 1rem; text-align: center; }
+  .mbti-card   { flex-direction: column; align-items: flex-start; }
 }
 
 /* ======== ACCESSIBILITY ======== */
@@ -823,150 +835,152 @@ footer {
       </h2>
     </div>
 
-    <div class="wiebeik-grid">
-
-      <!-- Left: tekst + trait cards + personality -->
-      <div>
-        <div class="wiebeik-text reveal">
-          <p>Mijn naam is <strong>Tijn Kaars</strong>, 22 jaar oud en student Commerciële Economie met specialisatie Digital Marketing aan de Hogeschool van Amsterdam. Ambitieus, analytisch en competitief — dat zijn woorden die mij goed omschrijven, én die ik terugzie in zowel sport als studie.</p>
-          <p>Sport is een rode draad in mijn leven. Als aanvoerder van mijn voetbalteam heb ik geleerd dat resultaten niet vanzelf komen: je hebt discipline, focus en een scherpe instelling nodig. Die mentaliteit neem ik mee naar de werkvloer. Ik wil niet alleen meedoen — ik wil het goed doen.</p>
-          <p>Tijdens mijn stage bij <strong>TBWA\NEBOKO</strong>, een van de grootste reclamebureaus van Nederland, heb ik de strategieafdeling van binnenuit meegemaakt. Van consumenteninzicht naar positionering, van briefing naar creatieve strategie — het was een bevestiging dat dit het vakgebied is waar ik wil groeien.</p>
-          <p><strong>Mijn doel?</strong> Doorgroeien als strateeg in de wereld van marketing, met een focus op de sportsector.</p>
-        </div>
-
-        <div class="trait-grid">
-          <div class="trait-card reveal">
-            <span class="trait-num">01</span>
-            <div class="trait-title">Ambitieus &amp; doelgericht</div>
-            <div class="trait-desc">Ik stel doelen en werk er systematisch naartoe. Stilstand voelt als achteruitgang.</div>
-          </div>
-          <div class="trait-card reveal">
-            <span class="trait-num">02</span>
-            <div class="trait-title">Analytisch ingesteld</div>
-            <div class="trait-desc">Ik redeneer vanuit feiten en data. Onderbouwen is een vanzelfsprekendheid.</div>
-          </div>
-          <div class="trait-card reveal">
-            <span class="trait-num">03</span>
-            <div class="trait-title">Competitief &amp; gedreven</div>
-            <div class="trait-desc">De wil om te presteren motiveert mij om het maximale uit elke situatie te halen.</div>
-          </div>
-          <div class="trait-card reveal">
-            <span class="trait-num">04</span>
-            <div class="trait-title">Sportmentaliteit</div>
-            <div class="trait-desc">Discipline en consistentie — geleerd op het sportveld, toegepast in alles wat ik doe.</div>
-          </div>
-          <div class="trait-card reveal">
-            <span class="trait-num">05</span>
-            <div class="trait-title">Strategisch denker</div>
-            <div class="trait-desc">Ik zie het grotere plaatje en vertaal inzichten naar concrete, haalbare acties.</div>
-          </div>
-          <div class="trait-card reveal">
-            <span class="trait-num">06</span>
-            <div class="trait-title">Leergierig</div>
-            <div class="trait-desc">Elke ervaring is een kans om beter te worden. Ik stel vragen en ga altijd een laag dieper.</div>
-          </div>
-        </div>
-
-        <div class="personality-box reveal" style="margin-top:2rem;">
-          <h3>Mijn persoonlijkheid — ENTJ-A: De Commandant</h3>
-          <p>Uit de 16Personalities-test blijkt dat ik een ENTJ-A ben: extravert, intuïtief, rationeel en besluitvaardig. Ik ben een natuurlijke leider die visie omzet in actie — strategisch, direct en zelfverzekerd. Mijn rol is <strong>Analyst</strong>, strategie: <strong>People Mastery</strong>. Mijn valkuil? Ongeduld met mensen die minder snel schakelen. Maar ook dat herken ik — en ik werk er bewust aan.</p>
-
-          <div class="trait-bars">
-            <div class="trait-bar-item">
-              <div class="trait-bar-labels">
-                <span class="tbl-left" style="color:#4dafbf">78% Extravert</span>
-                <span class="tbl-right">Introvert</span>
-              </div>
-              <div class="trait-bar-track">
-                <div class="trait-bar-fill" style="--pct:78%;background:#4dafbf"></div>
-              </div>
-            </div>
-            <div class="trait-bar-item">
-              <div class="trait-bar-labels">
-                <span class="tbl-left" style="color:#c9a227">60% Intuïtief</span>
-                <span class="tbl-right">Observerend</span>
-              </div>
-              <div class="trait-bar-track">
-                <div class="trait-bar-fill" style="--pct:60%;background:#c9a227"></div>
-              </div>
-            </div>
-            <div class="trait-bar-item">
-              <div class="trait-bar-labels">
-                <span class="tbl-left" style="color:#4a9e6b">84% Thinking</span>
-                <span class="tbl-right">Feeling</span>
-              </div>
-              <div class="trait-bar-track">
-                <div class="trait-bar-fill" style="--pct:84%;background:#4a9e6b"></div>
-              </div>
-            </div>
-            <div class="trait-bar-item">
-              <div class="trait-bar-labels">
-                <span class="tbl-left" style="color:#7c6bb0">63% Judging</span>
-                <span class="tbl-right">Prospecting</span>
-              </div>
-              <div class="trait-bar-track">
-                <div class="trait-bar-fill" style="--pct:63%;background:#7c6bb0"></div>
-              </div>
-            </div>
-            <div class="trait-bar-item">
-              <div class="trait-bar-labels">
-                <span class="tbl-left" style="color:#d45d5d">83% Assertief</span>
-                <span class="tbl-right">Turbulent</span>
-              </div>
-              <div class="trait-bar-track">
-                <div class="trait-bar-fill" style="--pct:83%;background:#d45d5d"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="mbti-cards">
-            <div class="mbti-card">
-              <span class="mbti-card-label">Persoonlijkheid</span>
-              <img src="Personality.Commander.svg" alt="De Commandant">
-              <p class="mbti-card-title">De Commandant</p>
-              <p class="mbti-card-desc">Commandanten zijn gedurfd, creatief en wilskrachtig — ze vinden altijd een weg vooruit, of ze maken er zelf een.</p>
-            </div>
-            <div class="mbti-card">
-              <span class="mbti-card-label">Rol</span>
-              <img src="Role.Analyst.svg" alt="De Analist">
-              <p class="mbti-card-title">De Analist</p>
-              <p class="mbti-card-desc">Analisten omarmen rationaliteit en zijn sterk in intellectuele vraagstukken. Onafhankelijk, open van geest en gedreven door logica.</p>
-            </div>
-            <div class="mbti-card">
-              <span class="mbti-card-label">Strategie</span>
-              <img src="Strategy.People.Master.svg" alt="People Mastery">
-              <p class="mbti-card-title">People Mastery</p>
-              <p class="mbti-card-desc">People Masters zoeken sociale verbinding, communiceren met gemak en zijn zelfverzekerd — zowel in groepen als in leiderschapsrollen.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right: testimonials -->
-      <div>
-        <div style="position:sticky;top:96px;">
-          <span class="section-label" style="margin-bottom:1.5rem;">Wat anderen zeggen</span>
-          <div class="testimonials-col">
-            <div class="testimonial-card reveal">
-              <p class="testimonial-quote">"Tijn viel direct op door zijn proactieve houding, opgewekte persoonlijkheid en heldere manier van communiceren. Hij werkt snel, is inhoudelijk sterk en levert zijn werk altijd volledig en doordacht aan. Samenwerken met hem was dan ook een oprecht genot. Met deze instelling, energie en kwaliteiten gaat hij ongetwijfeld heel ver komen."</p>
-              <div class="testimonial-name">Wendeline Sassen</div>
-              <div class="testimonial-role">Strategy Director, TBWA\NEBOKO</div>
-            </div>
-            <div class="testimonial-card reveal">
-              <p class="testimonial-quote">"Tijn is een geweldige student digital marketing. Zijn leergierigheid en kritische houding zorgen ervoor dat hij tot in detail is voorbereid om digital marketing vraagstukken tot een goed einde te brengen. Potentiële werkgevers mogen heel blij zijn als ze Tijn voor zich weten te winnen."</p>
-              <div class="testimonial-name">Lex Beijersbergen</div>
-              <div class="testimonial-role">Docent Digital Marketing, HvA</div>
-            </div>
-            <div class="testimonial-card reveal">
-              <p class="testimonial-quote">"Tijn viel tijdens zijn stage bij TBWA\NEBOKO op door zijn volwassen en professionele houding. Hij pakte werkzaamheden zelfstandig en vlot op en leverde inhoudelijk sterk werk. Ook in de samenwerking was hij prettig en betrouwbaar. Kortom, een aanvulling voor het team."</p>
-              <div class="testimonial-name">Julia van Nijkerk</div>
-              <div class="testimonial-role">Strategist &amp; stagebegeleider, TBWA\NEBOKO</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <!-- Intro tekst -->
+    <div class="wiebeik-text reveal">
+      <p>Mijn naam is <strong>Tijn Kaars</strong>, 22 jaar oud en student Commerciële Economie met specialisatie Digital Marketing aan de Hogeschool van Amsterdam. Ambitieus, analytisch en competitief — dat zijn woorden die mij goed omschrijven, én die ik terugzie in zowel sport als studie.</p>
+      <p>Sport is een rode draad in mijn leven. Als aanvoerder van mijn voetbalteam heb ik geleerd dat resultaten niet vanzelf komen: je hebt discipline, focus en een scherpe instelling nodig. Die mentaliteit neem ik mee naar de werkvloer. Ik wil niet alleen meedoen — ik wil het goed doen.</p>
+      <p>Tijdens mijn stage bij <strong>TBWA\NEBOKO</strong>, een van de grootste reclamebureaus van Nederland, heb ik de strategieafdeling van binnenuit meegemaakt. Van consumenteninzicht naar positionering, van briefing naar creatieve strategie — het was een bevestiging dat dit het vakgebied is waar ik wil groeien.</p>
+      <p><strong>Mijn doel?</strong> Doorgroeien als strateeg in de wereld van marketing, met een focus op de sportsector.</p>
     </div>
+
+    <!-- Eigenschap tegels -->
+    <div class="trait-grid">
+      <div class="trait-card reveal">
+        <span class="trait-num">01</span>
+        <div class="trait-title">Ambitieus &amp; doelgericht</div>
+        <div class="trait-desc">Ik stel doelen en werk er systematisch naartoe. Stilstand voelt als achteruitgang.</div>
+      </div>
+      <div class="trait-card reveal">
+        <span class="trait-num">02</span>
+        <div class="trait-title">Analytisch ingesteld</div>
+        <div class="trait-desc">Ik redeneer vanuit feiten en data. Onderbouwen is een vanzelfsprekendheid.</div>
+      </div>
+      <div class="trait-card reveal">
+        <span class="trait-num">03</span>
+        <div class="trait-title">Competitief &amp; gedreven</div>
+        <div class="trait-desc">De wil om te presteren motiveert mij om het maximale uit elke situatie te halen.</div>
+      </div>
+      <div class="trait-card reveal">
+        <span class="trait-num">04</span>
+        <div class="trait-title">Sportmentaliteit</div>
+        <div class="trait-desc">Discipline en consistentie — geleerd op het sportveld, toegepast in alles wat ik doe.</div>
+      </div>
+      <div class="trait-card reveal">
+        <span class="trait-num">05</span>
+        <div class="trait-title">Strategisch denken</div>
+        <div class="trait-desc">Ik zie het grotere plaatje en vertaal inzichten naar concrete, haalbare acties.</div>
+      </div>
+      <div class="trait-card reveal">
+        <span class="trait-num">06</span>
+        <div class="trait-title">Leergierig</div>
+        <div class="trait-desc">Elke ervaring is een kans om beter te worden. Ik stel vragen en ga altijd een laag dieper.</div>
+      </div>
+    </div>
+
+    <!-- Persoonlijkheid: tekst+bars links / MBTI cards rechts -->
+    <div class="personality-split">
+      <div class="personality-box reveal">
+        <h3>Mijn persoonlijkheid — ENTJ-A: De Commandant</h3>
+        <p>Uit de 16Personalities-test blijkt dat ik een ENTJ-A ben: extravert, intuïtief, rationeel en besluitvaardig. Ik ben een natuurlijke leider die visie omzet in actie — strategisch, direct en zelfverzekerd. Mijn valkuil? Ongeduld met mensen die minder snel schakelen. Maar ook dat herken ik — en ik werk er bewust aan.</p>
+        <div class="trait-bars">
+          <div class="trait-bar-item">
+            <div class="trait-bar-labels">
+              <span class="tbl-left" style="color:#4dafbf">78% Extravert</span>
+              <span class="tbl-right">Introvert</span>
+            </div>
+            <div class="trait-bar-track">
+              <div class="trait-bar-fill" style="--pct:78%;background:#4dafbf"></div>
+            </div>
+          </div>
+          <div class="trait-bar-item">
+            <div class="trait-bar-labels">
+              <span class="tbl-left" style="color:#c9a227">60% Intuïtief</span>
+              <span class="tbl-right">Observerend</span>
+            </div>
+            <div class="trait-bar-track">
+              <div class="trait-bar-fill" style="--pct:60%;background:#c9a227"></div>
+            </div>
+          </div>
+          <div class="trait-bar-item">
+            <div class="trait-bar-labels">
+              <span class="tbl-left" style="color:#4a9e6b">84% Thinking</span>
+              <span class="tbl-right">Feeling</span>
+            </div>
+            <div class="trait-bar-track">
+              <div class="trait-bar-fill" style="--pct:84%;background:#4a9e6b"></div>
+            </div>
+          </div>
+          <div class="trait-bar-item">
+            <div class="trait-bar-labels">
+              <span class="tbl-left" style="color:#7c6bb0">63% Judging</span>
+              <span class="tbl-right">Prospecting</span>
+            </div>
+            <div class="trait-bar-track">
+              <div class="trait-bar-fill" style="--pct:63%;background:#7c6bb0"></div>
+            </div>
+          </div>
+          <div class="trait-bar-item">
+            <div class="trait-bar-labels">
+              <span class="tbl-left" style="color:#d45d5d">83% Assertief</span>
+              <span class="tbl-right">Turbulent</span>
+            </div>
+            <div class="trait-bar-track">
+              <div class="trait-bar-fill" style="--pct:83%;background:#d45d5d"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="personality-split-right">
+        <div class="mbti-card reveal">
+          <img src="Personality.Commander.svg" alt="De Commandant">
+          <div class="mbti-card-info">
+            <span class="mbti-card-label">Persoonlijkheid</span>
+            <p class="mbti-card-title">De Commandant</p>
+            <p class="mbti-card-desc">Commandanten zijn gedurfd, creatief en wilskrachtig — ze vinden altijd een weg vooruit, of ze maken er zelf een.</p>
+          </div>
+        </div>
+        <div class="mbti-card reveal">
+          <img src="Role.Analyst.svg" alt="De Analist">
+          <div class="mbti-card-info">
+            <span class="mbti-card-label">Rol</span>
+            <p class="mbti-card-title">De Analist</p>
+            <p class="mbti-card-desc">Analisten omarmen rationaliteit en zijn sterk in intellectuele vraagstukken. Onafhankelijk, open van geest en gedreven door logica.</p>
+          </div>
+        </div>
+        <div class="mbti-card reveal">
+          <img src="Strategy.People.Master.svg" alt="People Mastery">
+          <div class="mbti-card-info">
+            <span class="mbti-card-label">Strategie</span>
+            <p class="mbti-card-title">People Mastery</p>
+            <p class="mbti-card-desc">People Masters zoeken sociale verbinding, communiceren met gemak en zijn zelfverzekerd — zowel in groepen als in leiderschapsrollen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="testimonials-section">
+      <span class="section-label">Wat anderen zeggen</span>
+      <div class="testimonials-row">
+        <div class="testimonial-card reveal">
+          <p class="testimonial-quote">"Tijn viel direct op door zijn proactieve houding, opgewekte persoonlijkheid en heldere manier van communiceren. Hij werkt snel, is inhoudelijk sterk en levert zijn werk altijd volledig en doordacht aan. Samenwerken met hem was dan ook een oprecht genot. Met deze instelling, energie en kwaliteiten gaat hij ongetwijfeld heel ver komen."</p>
+          <div class="testimonial-name">Wendeline Sassen</div>
+          <div class="testimonial-role">Strategy Director, TBWA\NEBOKO</div>
+        </div>
+        <div class="testimonial-card reveal">
+          <p class="testimonial-quote">"Tijn is een geweldige student digital marketing. Zijn leergierigheid en kritische houding zorgen ervoor dat hij tot in detail is voorbereid om digital marketing vraagstukken tot een goed einde te brengen. Potentiële werkgevers mogen heel blij zijn als ze Tijn voor zich weten te winnen."</p>
+          <div class="testimonial-name">Lex Beijersbergen</div>
+          <div class="testimonial-role">Docent Digital Marketing, HvA</div>
+        </div>
+        <div class="testimonial-card reveal">
+          <p class="testimonial-quote">"Tijn viel tijdens zijn stage bij TBWA\NEBOKO op door zijn volwassen en professionele houding. Hij pakte werkzaamheden zelfstandig en vlot op en leverde inhoudelijk sterk werk. Ook in de samenwerking was hij prettig en betrouwbaar. Kortom, een aanvulling voor het team."</p>
+          <div class="testimonial-name">Julia van Nijkerk</div>
+          <div class="testimonial-role">Strategist &amp; stagebegeleider, TBWA\NEBOKO</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 

@@ -765,9 +765,19 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   display: flex; flex-direction: column;
 }
 .skill-card-front {
-  background: rgba(8,12,28,0.85);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: #0b1120;
+  border: 1px solid rgba(255,255,255,0.07);
   position: relative;
+  overflow: hidden;
+}
+.skill-card-front::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,60,200,0.18) 0%, transparent 70%);
+  pointer-events: none;
 }
 .skill-card-back {
   background: rgba(0,82,255,0.07);
@@ -776,48 +786,38 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   justify-content: flex-start; gap: .75rem;
 }
 .skill-icon-box {
-  width: 56px; height: 56px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px;
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 1.25rem; flex-shrink: 0;
+  margin-bottom: 1.4rem; flex-shrink: 0;
 }
 .skill-icon-box svg {
-  width: 26px; height: 26px;
+  width: 28px; height: 28px;
   color: var(--text); stroke-width: 1.5;
 }
-.skill-badge {
-  position: absolute; top: 1.5rem; right: 1.5rem;
-  font-size: .7rem; font-weight: 700;
-  letter-spacing: .06em; text-transform: uppercase;
-  color: var(--text);
-  background: rgba(0,82,255,0.12);
-  border: 1px solid rgba(0,82,255,0.4);
-  border-radius: 8px; padding: .3rem .65rem;
-}
 .skill-card-title {
-  font-size: 1.1rem; font-weight: 700;
-  color: var(--text); margin-bottom: .9rem;
-  font-family: var(--font-head);
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--text); margin-bottom: 1rem;
 }
 .skill-card-divider {
-  height: 1px; background: rgba(255,255,255,0.08);
-  margin-bottom: .9rem;
+  height: 1px; background: rgba(255,255,255,0.07);
+  margin-bottom: 1rem;
 }
 .skill-card-desc {
-  font-size: .88rem; color: rgba(255,255,255,0.5);
-  line-height: 1.75; flex: 1; margin-bottom: 1.25rem;
+  font-size: .9rem; color: rgba(255,255,255,0.48);
+  line-height: 1.78; flex: 1; margin-bottom: 1.5rem;
 }
 .skill-tags {
-  display: flex; flex-wrap: wrap; gap: .45rem;
+  display: flex; flex-wrap: wrap; gap: .5rem;
 }
 .skill-tag {
-  font-size: .75rem; font-weight: 500;
-  color: rgba(255,255,255,0.65);
-  background: rgba(255,255,255,0.06);
+  font-size: .8rem; font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 999px; padding: .28rem .7rem;
+  border-radius: 8px; padding: .4rem .9rem;
 }
 .skill-back-label {
   font-size: .65rem; font-weight: 700;
@@ -1412,7 +1412,7 @@ footer {
                 <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
               </svg>
             </div>
-            <span class="skill-badge">CE-skill</span>
+
             <div class="skill-card-title">Kritisch denken</div>
             <div class="skill-card-divider"></div>
             <p class="skill-card-desc">Ik stel de juiste vragen en laat me niet leiden door de eerste conclusie. Ik zoom in op details zonder het grotere plaatje te verliezen.</p>
@@ -1441,7 +1441,7 @@ footer {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <span class="skill-badge">CE-skill</span>
+
             <div class="skill-card-title">Samenwerken</div>
             <div class="skill-card-divider"></div>
             <p class="skill-card-desc">Ik werk graag samen en neem initiatief in het verbinden van ieders bijdrage tot een sterk, coherent geheel.</p>
@@ -1468,7 +1468,7 @@ footer {
                 <polyline points="16 7 22 7 22 13"/>
               </svg>
             </div>
-            <span class="skill-badge">CE-skill</span>
+
             <div class="skill-card-title">Commercieel bewustzijn</div>
             <div class="skill-card-divider"></div>
             <p class="skill-card-desc">Ik denk mee vanuit het commerciële doel — niet alleen vanuit het creatieve of analytische proces. Resultaat telt.</p>
@@ -1497,7 +1497,7 @@ footer {
                 <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
               </svg>
             </div>
-            <span class="skill-badge">CE-skill</span>
+
             <div class="skill-card-title">Aanpassingsvermogen</div>
             <div class="skill-card-divider"></div>
             <p class="skill-card-desc">Ik pas me snel aan wisselende omstandigheden aan en blijf effectief functioneren als de context verandert.</p>

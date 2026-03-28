@@ -2128,26 +2128,48 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 </script>
 
-<!-- ======== 3D GLOBE (cobe WebGL via esm.sh) ======== -->
+<!-- ======== 3D GLOBE (cobe WebGL) ======== -->
 <script type="module">
-import createGlobe from 'https://esm.sh/cobe@0.6.3';
-
-(function initGlobe() {
+(async function initGlobe() {
   const canvas = document.getElementById('globe-canvas');
   if (!canvas) return;
 
-  // Hide HTML labels (cobe renders markers natively)
-  const lblAms = document.getElementById('globe-lbl-ams');
-  const lblTky = document.getElementById('globe-lbl-tky');
-  if (lblAms) lblAms.style.display = 'none';
-  if (lblTky) lblTky.style.display = 'none';
+  ['globe-lbl-ams','globe-lbl-tky'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
 
-  let phi = 1.5;
-  let globe = null;
+  // Wait for canvas to have real layout dimensions
+  function waitForSize() {
+    return new Promise(resolve => {
+      if (canvas.offsetWidth > 0) return resolve(canvas.offsetWidth);
+      const ro = new ResizeObserver(entries => {
+        const w = entries[0]?.contentRect.width;
+        if (w > 0) { ro.disconnect(); resolve(w); }
+      });
+      ro.observe(canvas);
+      setTimeout(() => { ro.disconnect(); resolve(400); }, 2000);
+    });
+  }
 
-  function init() {
-    const width = canvas.offsetWidth || 400;
-    globe = createGlobe(canvas, {
+  const width = await waitForSize();
+
+  // Try loading cobe from CDN
+  let createGlobe = null;
+  for (const url of [
+    'https://cdn.jsdelivr.net/npm/cobe@0.6.3/dist/cobe.esm.js',
+    'https://esm.sh/cobe@0.6.3',
+  ]) {
+    try {
+      const mod = await import(url);
+      createGlobe = mod.default || mod;
+      break;
+    } catch (_) {}
+  }
+
+  if (createGlobe) {
+    let phi = 1.5;
+    createGlobe(canvas, {
       devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
       width,
       height: width,
@@ -2164,26 +2186,107 @@ import createGlobe from 'https://esm.sh/cobe@0.6.3';
         { location: [52.37, 4.90],   size: 0.07 },
         { location: [35.68, 139.65], size: 0.07 },
       ],
-      onRender: (state) => {
-        state.phi = phi;
-        phi += 0.003;
-      }
+      onRender: (state) => { state.phi = phi; phi += 0.003; }
     });
-    setTimeout(() => { canvas.style.opacity = '1'; }, 100);
+  } else {
+    // Canvas 2D fallback — no external dependencies
+    drawFallback(canvas, width);
   }
 
-  if (canvas.offsetWidth > 0) {
-    init();
-  } else {
-    const ro = new ResizeObserver((entries) => {
-      if (entries[0]?.contentRect.width > 0) {
-        ro.disconnect();
-        init();
-      }
-    });
-    ro.observe(canvas);
-  }
+  canvas.style.opacity = '1';
 })();
+
+function drawFallback(canvas, size) {
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width  = size * DPR;
+  canvas.height = size * DPR;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(DPR, DPR);
+  const CX = size / 2, CY = size / 2, R = size * 0.42;
+
+  function ll3(lat, lon) {
+    const φ = lat*Math.PI/180, λ = lon*Math.PI/180;
+    return [Math.cos(φ)*Math.sin(λ), Math.sin(φ), Math.cos(φ)*Math.cos(λ)];
+  }
+  function rotY(p, θ) {
+    return [p[0]*Math.cos(θ)-p[2]*Math.sin(θ), p[1], p[0]*Math.sin(θ)+p[2]*Math.cos(θ)];
+  }
+  function proj(p) { return [CX+p[0]*R, CY-p[1]*R, p[2]]; }
+  function slerp(a,b,t) {
+    const dot=Math.min(1,Math.max(-1,a[0]*b[0]+a[1]*b[1]+a[2]*b[2]));
+    const Ω=Math.acos(dot);
+    if(Ω<1e-4) return [a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1]),a[2]+t*(b[2]-a[2])];
+    const s=Math.sin(Ω), sa=Math.sin((1-t)*Ω)/s, sb=Math.sin(t*Ω)/s;
+    return [a[0]*sa+b[0]*sb,a[1]*sa+b[1]*sb,a[2]*sa+b[2]*sb];
+  }
+
+  const AMS=ll3(52.37,4.90), TKY=ll3(35.68,139.65);
+  const N=120, arcBase=Array.from({length:N+1},(_,i)=>{
+    const t=i/N, pt=slerp(AMS,TKY,t), h=1+Math.sin(t*Math.PI)*0.3;
+    return [pt[0]*h,pt[1]*h,pt[2]*h];
+  });
+
+  let θ=-1.3, arcT=0;
+  function frame() {
+    ctx.clearRect(0,0,size,size);
+    // Globe glow
+    const g=ctx.createRadialGradient(CX,CY,R*0.6,CX,CY,R*1.3);
+    g.addColorStop(0,'rgba(0,82,255,0.08)'); g.addColorStop(1,'rgba(0,82,255,0)');
+    ctx.beginPath(); ctx.arc(CX,CY,R*1.3,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+    // Border
+    ctx.beginPath(); ctx.arc(CX,CY,R,0,Math.PI*2);
+    ctx.strokeStyle='rgba(100,140,255,0.2)'; ctx.lineWidth=1; ctx.stroke();
+    // Grid
+    for(let lat=-75;lat<=75;lat+=15){
+      ctx.beginPath(); let pen=false;
+      for(let lon=-180;lon<=180;lon+=3){
+        const [sx,sy,z]=proj(rotY(ll3(lat,lon),θ));
+        if(z>0){pen?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);pen=true;}else pen=false;
+      }
+      ctx.strokeStyle='rgba(100,140,255,0.12)'; ctx.lineWidth=0.5; ctx.stroke();
+    }
+    for(let lon=0;lon<360;lon+=20){
+      ctx.beginPath(); let pen=false;
+      for(let lat=-90;lat<=90;lat+=3){
+        const [sx,sy,z]=proj(rotY(ll3(lat,lon),θ));
+        if(z>0){pen?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);pen=true;}else pen=false;
+      }
+      ctx.strokeStyle='rgba(100,140,255,0.12)'; ctx.lineWidth=0.5; ctx.stroke();
+    }
+    // Static arc
+    ctx.beginPath(); let pd=false;
+    for(let i=0;i<=N;i++){
+      const [sx,sy,z]=proj(rotY(arcBase[i],θ));
+      if(z>-0.1){pd?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);pd=true;}else pd=false;
+    }
+    ctx.strokeStyle='rgba(100,160,255,0.25)'; ctx.lineWidth=1.5; ctx.stroke();
+    // Traveling dot
+    const head=Math.floor(arcT*N), DASH=20;
+    ctx.beginPath();
+    for(let i=DASH;i>=0;i--){
+      const idx=(head-i+N+1)%(N+1);
+      const [sx,sy]=proj(rotY(arcBase[idx],θ));
+      i===DASH?ctx.moveTo(sx,sy):ctx.lineTo(sx,sy);
+    }
+    ctx.strokeStyle='rgba(160,200,255,0.9)'; ctx.lineWidth=2; ctx.stroke();
+    // City dots
+    [[52.37,4.90,'AMS'],[35.68,139.65,'TYO']].forEach(([lat,lon,lbl])=>{
+      const [sx,sy,z]=proj(rotY(ll3(lat,lon),θ));
+      if(z<=0) return;
+      const gd=ctx.createRadialGradient(sx,sy,0,sx,sy,12);
+      gd.addColorStop(0,'rgba(120,180,255,0.5)'); gd.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.beginPath(); ctx.arc(sx,sy,12,0,Math.PI*2); ctx.fillStyle=gd; ctx.fill();
+      ctx.beginPath(); ctx.arc(sx,sy,3.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(180,210,255,0.95)'; ctx.fill();
+      ctx.font=`bold ${size*0.024}px DM Sans,sans-serif`;
+      ctx.fillStyle='rgba(180,210,255,0.8)';
+      ctx.fillText(lbl, sx+8, sy-7);
+    });
+    θ+=0.0015; arcT=(arcT+0.002)%1;
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
 </script>
 </body>
 </html>

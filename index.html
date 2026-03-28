@@ -1272,19 +1272,19 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
     return [sa*a[0]+sb*b[0], sa*a[1]+sb*b[1], sa*a[2]+sb*b[2]];
   }
 
-  // Project unit vector → screen coords given current globe rotation.
-  // Cobe convention: effective longitude = lon + phi  → apply R_y(-phi).
-  // Theta tilt: R_x(-THETA) so north pole stays visible at top.
+  // Project unit vector → screen coords. Matches cobe's GLSL exactly:
+  //   pos.xz = rotate(pos.xz, phi)  →  x'= x·cos+z·sin,  z'= -x·sin+z·cos
+  //   pos.yz = rotate(pos.yz, theta) →  y'= y·cos+z·sin,  z'= -y·sin+z·cos
   function project(v, curPhi, W) {
     let [x, y, z] = v;
-    // Step 1: R_y(-curPhi)
+    // R_y(phi)
     const cp = Math.cos(curPhi), sp = Math.sin(curPhi);
-    const xr = x * cp - z * sp;
-    const zr = x * sp + z * cp;
-    // Step 2: R_x(-THETA)
+    const xr =  x * cp + z * sp;
+    const zt = -x * sp + z * cp;
+    // R_x(THETA)
     const ct = Math.cos(THETA), st = Math.sin(THETA);
-    const yr = y * ct + zr * st;
-    const zf = -y * st + zr * ct;
+    const yr =  y * ct + zt * st;
+    const zf = -y * st + zt * ct;
     const R = W / 2;
     return { sx: W/2 + xr*R, sy: W/2 + yr*R, depth: zf };
   }

@@ -55,20 +55,48 @@ strong { color: var(--text); font-weight: 600; }
 .section { padding: 7rem 5vw; position: relative; overflow: visible; }
 .section-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
 
-/* ======== SECTION GLOWS ======== */
-.section-glow {
-  position: absolute; border-radius: 50%;
-  pointer-events: none; filter: blur(140px); z-index: 0;
+/* ======== PAGE BACKGROUND CANVAS ======== */
+#page-bg {
+  position: fixed; inset: 0; z-index: -1;
+  pointer-events: none; overflow: hidden;
 }
-.section-glow-a {
-  width: 550px; height: 550px;
-  background: rgba(0,82,255,0.12);
+#page-bg .bg-blob {
+  position: absolute; border-radius: 50%; pointer-events: none;
+}
+#page-bg .bg-blob-1 {
+  width: 900px; height: 900px;
+  background: rgba(0,82,255,0.16);
+  top: -20%; right: -15%;
+  filter: blur(130px);
   animation: glow1 13s ease-in-out infinite alternate;
 }
-.section-glow-b {
-  width: 380px; height: 380px;
-  background: rgba(0,40,200,0.09);
+#page-bg .bg-blob-2 {
+  width: 700px; height: 700px;
+  background: rgba(0,40,200,0.11);
+  top: 15%; left: -10%;
+  filter: blur(150px);
   animation: glow2 18s ease-in-out infinite alternate;
+}
+#page-bg .bg-blob-3 {
+  width: 600px; height: 600px;
+  background: rgba(0,70,255,0.09);
+  top: 50%; right: 5%;
+  filter: blur(160px);
+  animation: glow1 22s ease-in-out infinite alternate-reverse;
+}
+#page-bg .bg-blob-4 {
+  width: 550px; height: 550px;
+  background: rgba(0,30,180,0.10);
+  top: 65%; left: 5%;
+  filter: blur(140px);
+  animation: glow2 16s ease-in-out infinite alternate 3s;
+}
+#page-bg .bg-blob-5 {
+  width: 500px; height: 500px;
+  background: rgba(0,60,220,0.08);
+  top: 85%; left: 35%;
+  filter: blur(170px);
+  animation: glow1 20s ease-in-out infinite alternate 6s;
 }
 .section-header { max-width: 680px; margin-bottom: 3.5rem; }
 .section-raised {
@@ -203,23 +231,7 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 }
 
 /* ======== HERO GLOWS ======== */
-#home { position: relative; overflow-x: hidden; overflow-y: visible; }
-.hero-glow {
-  position: absolute; border-radius: 50%;
-  pointer-events: none; filter: blur(100px); z-index: 0;
-}
-.hero-glow-1 {
-  width: 780px; height: 780px;
-  background: rgba(0,82,255,0.42);
-  top: -280px; right: -120px;
-  animation: glow1 11s ease-in-out infinite alternate;
-}
-.hero-glow-2 {
-  width: 520px; height: 520px;
-  background: rgba(0,40,200,0.24);
-  bottom: -200px; left: -100px;
-  animation: glow2 14s ease-in-out infinite alternate;
-}
+#home { position: relative; }
 @keyframes glow1 {
   from { transform: translate(0,0) scale(1); }
   to   { transform: translate(-200px,150px) scale(1.3); }
@@ -1183,6 +1195,13 @@ footer {
 </style>
 </head>
 <body>
+<div id="page-bg">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+  <div class="bg-blob bg-blob-4"></div>
+  <div class="bg-blob bg-blob-5"></div>
+</div>
 
 <div id="scroll-bar"></div>
 
@@ -1206,8 +1225,7 @@ footer {
 
 <!-- ======== HERO ======== -->
 <section id="home">
-  <div class="hero-glow hero-glow-1"></div>
-  <div class="hero-glow hero-glow-2"></div>
+
   <div class="hero-inner">
     <div class="hero-content">
       <h1 class="hero-name">TIJN <span style="font-family:'Instrument Serif',serif;color:#fff;font-weight:400">KAARS</span></h1>
@@ -1292,7 +1310,6 @@ footer {
 
 <!-- ======== WIE BEN IK ======== -->
 <section id="wie-ben-ik" class="section" style="padding-top:3rem">
-  <div class="section-glow section-glow-b" style="bottom:-150px;left:-60px;animation-delay:2s"></div>
   <div class="section-inner">
 
     <!-- Intro: tekst links, foto rechts -->
@@ -1567,7 +1584,7 @@ footer {
 </section>
 
 <!-- ======== WAT KAN IK ======== -->
-<section id="wat-kan-ik" class="section" style="background:#000">
+<section id="wat-kan-ik" class="section">
   <div class="section-inner">
 
     <div class="section-header reveal">
@@ -1827,8 +1844,6 @@ footer {
 
 <!-- ======== WAT WIL IK ======== -->
 <section id="wat-wil-ik" class="section">
-  <div class="section-glow section-glow-a" style="top:-150px;right:-120px;animation-delay:1s"></div>
-  <div class="section-glow section-glow-b" style="bottom:-180px;left:-80px;animation-delay:5s"></div>
   <div class="section-inner">
 
     <div class="section-header reveal">
@@ -1880,8 +1895,6 @@ footer {
 
 <!-- ======== CONTACT ======== -->
 <section id="contact" class="section">
-  <div class="section-glow section-glow-a" style="top:-200px;left:50%;transform:translateX(-50%);animation-delay:3s"></div>
-  <div class="section-glow section-glow-b" style="bottom:-100px;right:-60px;animation-delay:7s"></div>
   <div class="section-inner">
 
     <div class="section-header reveal">

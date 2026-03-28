@@ -935,14 +935,30 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   border-radius: 14px;
   padding: 1.2rem 1.3rem 1.3rem;
 }
-.case-logo {
-  height: 44px;
-  width: auto;
-  display: block;
-  object-fit: contain;
-  object-position: left center;
+/* Crop transparent canvas padding so all logos appear at same visual height (24px content) */
+.case-logo-wrap {
+  height: 24px;
+  overflow: hidden;
   margin-bottom: .7rem;
 }
+.case-logo { display: block; width: auto; }
+
+/* Per-logo: img scaled so content = 24px tall, then shifted up/left to remove padding */
+/* Bol: content 391×154 at (55,166) in 500×500 canvas → img 78px */
+.case-logo-wrap--bol { width: 61px; }
+.case-logo-wrap--bol .case-logo { height: 78px; margin-top: -26px; margin-left: -9px; }
+
+/* ING: content 399×101 at (50,192) → img 119px */
+.case-logo-wrap--ing { width: 95px; }
+.case-logo-wrap--ing .case-logo { height: 119px; margin-top: -46px; margin-left: -12px; }
+
+/* McDonald's: content 396×51 at (53,225) → img 235px */
+.case-logo-wrap--mcdo { width: 186px; }
+.case-logo-wrap--mcdo .case-logo { height: 235px; margin-top: -106px; margin-left: -25px; }
+
+/* STC: content 395×85 at (51,208) → img 141px */
+.case-logo-wrap--stc { width: 112px; }
+.case-logo-wrap--stc .case-logo { height: 141px; margin-top: -59px; margin-left: -14px; }
 .case-row {
   display: flex; align-items: center; gap: .5rem;
   margin-bottom: .7rem;
@@ -1732,7 +1748,7 @@ footer {
           <div class="case-card">
             <img class="case-img" src="Bol.jpg" alt="bol.com">
             <div class="case-overlay">
-              <img class="case-logo" src="Logo's/Bol.png" alt="bol.com">
+              <div class="case-logo-wrap case-logo-wrap--bol"><img class="case-logo" src="Logo's/Bol.png" alt="bol.com"></div>
               <div class="case-row">
                 <span class="case-company">TBWA\NEBOKO</span>
                 <span class="case-badge">PITCH GEWONNEN</span>
@@ -1749,7 +1765,7 @@ footer {
           <div class="case-card">
             <img class="case-img" src="save-the-children-customer-story-header.png" alt="Save the Children">
             <div class="case-overlay">
-              <img class="case-logo" src="Logo's/STC.png" alt="Save the Children">
+              <div class="case-logo-wrap case-logo-wrap--stc"><img class="case-logo" src="Logo's/STC.png" alt="Save the Children"></div>
               <div class="case-row">
                 <span class="case-company">TBWA\NEBOKO</span>
                 <span class="case-badge">LIVE</span>
@@ -1766,7 +1782,7 @@ footer {
           <div class="case-card">
             <img class="case-img" src="ING.jpg" alt="ING">
             <div class="case-overlay">
-              <img class="case-logo" src="Logo's/ING.png" alt="ING">
+              <div class="case-logo-wrap case-logo-wrap--ing"><img class="case-logo" src="Logo's/ING.png" alt="ING"></div>
               <div class="case-row">
                 <span class="case-company">TBWA\NEBOKO</span>
                 <span class="case-badge">WK 2026</span>
@@ -1783,7 +1799,7 @@ footer {
           <div class="case-card">
             <img class="case-img" src="McDonalds 17.23.46.jpg" alt="McDonald's">
             <div class="case-overlay">
-              <img class="case-logo" src="Logo's/McDonalds.png" alt="McDonald's">
+              <div class="case-logo-wrap case-logo-wrap--mcdo"><img class="case-logo" src="Logo's/McDonalds.png" alt="McDonald's"></div>
               <div class="case-row">
                 <span class="case-company">TBWA\NEBOKO</span>
                 <span class="case-badge">6 MAANDEN</span>
@@ -1800,7 +1816,7 @@ footer {
           <div class="case-card">
             <img class="case-img" src="Bol.jpg" alt="bol.com">
             <div class="case-overlay">
-              <img class="case-logo" src="Logo's/Bol.png" alt="bol.com">
+              <div class="case-logo-wrap case-logo-wrap--bol"><img class="case-logo" src="Logo's/Bol.png" alt="bol.com"></div>
               <div class="case-row"><span class="case-company">TBWA\NEBOKO</span><span class="case-badge">PITCH GEWONNEN</span></div>
               <p class="case-desc">Analyse van 10 jaar communicatiegeschiedenis om te achterhalen waarom bol.com marktaandeel verliest. Pitch gewonnen — bol.com is nu klant.</p>
               <div class="case-tags"><span class="case-tag">Competitive analyse</span><span class="case-tag">10 jaar data</span></div>
@@ -1809,7 +1825,7 @@ footer {
           <div class="case-card">
             <img class="case-img" src="save-the-children-customer-story-header.png" alt="Save the Children">
             <div class="case-overlay">
-              <img class="case-logo" src="Logo's/STC.png" alt="Save the Children">
+              <div class="case-logo-wrap case-logo-wrap--stc"><img class="case-logo" src="Logo's/STC.png" alt="Save the Children"></div>
               <div class="case-row"><span class="case-company">TBWA\NEBOKO</span><span class="case-badge">LIVE</span></div>
               <p class="case-desc">Beeldselectie voor een tv-commercial met meer dan €2 miljoen campagnebudget. Meerdere geselecteerde beelden zijn gebruikt in de definitieve uitzending.</p>
               <div class="case-tags"><span class="case-tag">€2M+ campagne</span><span class="case-tag">TV-commercial</span></div>
@@ -1818,7 +1834,7 @@ footer {
           <div class="case-card">
             <img class="case-img" src="ING.jpg" alt="ING">
             <div class="case-overlay">
-              <img class="case-logo" src="Logo's/ING.png" alt="ING">
+              <div class="case-logo-wrap case-logo-wrap--ing"><img class="case-logo" src="Logo's/ING.png" alt="ING"></div>
               <div class="case-row"><span class="case-company">TBWA\NEBOKO</span><span class="case-badge">WK 2026</span></div>
               <p class="case-desc">Onderzoek naar maatschappelijke thema's voor de WK 2026 campagne van het Nederlands elftal. Mijn thema is aangenomen en vormt de kern van de campagne.</p>
               <div class="case-tags"><span class="case-tag">Campagnethema</span><span class="case-tag">Maatschappelijk onderzoek</span></div>
@@ -1827,7 +1843,7 @@ footer {
           <div class="case-card">
             <img class="case-img" src="McDonalds 17.23.46.jpg" alt="McDonald's">
             <div class="case-overlay">
-              <img class="case-logo" src="Logo's/McDonalds.png" alt="McDonald's">
+              <div class="case-logo-wrap case-logo-wrap--mcdo"><img class="case-logo" src="Logo's/McDonalds.png" alt="McDonald's"></div>
               <div class="case-row"><span class="case-company">TBWA\NEBOKO</span><span class="case-badge">6 MAANDEN</span></div>
               <p class="case-desc">Maandelijkse concurrentieanalyse van 6 merken op alle kanalen. Dagelijkse rapportage bij bijzondere acties van concurrenten voor het Nederlandse team.</p>
               <div class="case-tags"><span class="case-tag">6 concurrenten</span><span class="case-tag">Alle kanalen</span></div>

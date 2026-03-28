@@ -1098,53 +1098,85 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 
 /* ======== CONTACT ======== */
 .cta-block {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px; padding: 5rem 4rem;
+  background: #03050f;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 28px; padding: 6rem 4rem;
   text-align: center; position: relative; overflow: hidden;
 }
 .cta-block::before {
   content: '';
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  width: 400px; height: 200px;
-  background: radial-gradient(ellipse, rgba(0,82,255,.18) 0%, transparent 70%);
+  position: absolute; top: -20%; left: -10%;
+  width: 80%; height: 110%;
+  background: radial-gradient(ellipse at 30% 40%, rgba(0,60,255,0.55) 0%, rgba(0,30,180,0.25) 35%, transparent 70%);
+  pointer-events: none;
+}
+.cta-block::after {
+  content: '';
+  position: absolute; bottom: -10%; right: -5%;
+  width: 50%; height: 60%;
+  background: radial-gradient(ellipse, rgba(0,40,200,0.20) 0%, transparent 70%);
   pointer-events: none;
 }
 .cta-block > * { position: relative; z-index: 1; }
-.cta-block h2 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800; letter-spacing: -0.02em;
-  color: var(--text); margin-bottom: 1rem;
+.cta-badge {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 999px; padding: .35rem .9rem;
+  font-size: .78rem; font-weight: 500; color: rgba(255,255,255,0.7);
+  letter-spacing: .02em; margin-bottom: 2rem;
 }
+.cta-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--blue); box-shadow: 0 0 6px var(--blue);
+  flex-shrink: 0;
+}
+.cta-block h2 {
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-weight: 800; letter-spacing: -0.03em;
+  color: var(--text); margin-bottom: 1rem; line-height: 1.1;
+}
+.cta-h2-dim { color: rgba(255,255,255,0.4); display: block; }
 .cta-block p {
-  font-size: .95rem; color: var(--text-sub);
-  line-height: 1.75; max-width: 460px;
+  font-size: .95rem; color: rgba(255,255,255,0.5);
+  line-height: 1.75; max-width: 440px;
   margin: 0 auto 2.5rem;
 }
+.cta-primary-btn {
+  display: inline-flex; align-items: center; gap: .55rem;
+  padding: .85rem 2rem;
+  background: var(--blue); border: none; border-radius: 10px;
+  font-size: .95rem; font-weight: 600; color: #fff;
+  cursor: pointer; text-decoration: none;
+  transition: background .2s, transform .15s, box-shadow .2s;
+  margin-bottom: 2.5rem;
+}
+.cta-primary-btn:hover {
+  background: #1a6aff; transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,82,255,0.4);
+}
+.cta-primary-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 .social-links {
-  display: flex; gap: 1rem;
+  display: flex; gap: .8rem;
   justify-content: center; flex-wrap: wrap;
 }
 .social-btn {
   display: inline-flex; align-items: center; gap: .6rem;
-  padding: .75rem 1.6rem;
-  background: var(--bg-pill);
-  border: 1px solid var(--border-md);
+  padding: .65rem 1.4rem;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px;
-  font-size: .88rem; font-weight: 500; color: var(--text-sub);
+  font-size: .84rem; font-weight: 500; color: rgba(255,255,255,0.55);
   position: relative; overflow: hidden;
   transition: color .2s, border-color .2s, transform .2s;
 }
 .social-btn::before {
   content: '';
   position: absolute; top: 0; left: -100%; bottom: 0; width: 100%;
-  background: rgba(0,82,255,.1);
+  background: rgba(0,82,255,.12);
   transition: left .3s cubic-bezier(.22,1,.36,1);
 }
-.social-btn:hover { color: var(--text); border-color: var(--blue-border); transform: translateY(-2px); }
+.social-btn:hover { color: var(--text); border-color: rgba(0,82,255,0.4); transform: translateY(-2px); }
 .social-btn:hover::before { left: 0; }
-.social-btn svg { width: 18px; height: 18px; flex-shrink: 0; position: relative; z-index: 1; }
+.social-btn svg { width: 16px; height: 16px; flex-shrink: 0; position: relative; z-index: 1; }
 .social-btn span { position: relative; z-index: 1; }
 
 /* ======== FOOTER ======== */
@@ -1976,17 +2008,21 @@ footer {
     </div>
 
     <div class="cta-block reveal">
-      <h2>Neem contact <span style="color:var(--blue)">op</span></h2>
-      <p>Wil je meer weten over mij, mijn stage-ervaringen of mijn ambities? Ik ben te vinden op onderstaande platformen. Geen lange mails — gewoon een bericht is genoeg.</p>
+      <div class="cta-badge">
+        <span class="cta-badge-dot"></span>
+        Beschikbaar voor samenwerking
+      </div>
+      <h2>Klaar om kennis <span class="cta-h2-dim">te maken?</span></h2>
+      <p>Wil je meer weten over mij, mijn stage-ervaringen of mijn ambities? Geen lange mails — gewoon een bericht is genoeg.</p>
+      <a href="https://www.linkedin.com/in/tijnkaars/" target="_blank" rel="noopener" class="cta-primary-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+          <rect x="2" y="9" width="4" height="12"/>
+          <circle cx="4" cy="4" r="2"/>
+        </svg>
+        Stuur een bericht
+      </a>
       <div class="social-links">
-        <a href="https://www.linkedin.com/in/tijnkaars/" target="_blank" rel="noopener" class="social-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-            <rect x="2" y="9" width="4" height="12"/>
-            <circle cx="4" cy="4" r="2"/>
-          </svg>
-          <span>LinkedIn</span>
-        </a>
         <a href="https://www.instagram.com/ig.tijn/" target="_blank" rel="noopener" class="social-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>

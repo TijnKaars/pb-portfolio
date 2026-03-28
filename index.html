@@ -2128,18 +2128,86 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 </script>
 
-<!-- ======== 3D GLOBE (cobe WebGL) ======== -->
+<!-- ======== 3D GLOBE (cobe — translated from 21st.dev React component) ======== -->
 <script type="module">
 (async function initGlobe() {
   const canvas = document.getElementById('globe-canvas');
   if (!canvas) return;
 
+  // Hide static HTML labels — globe renders markers itself
   ['globe-lbl-ams','globe-lbl-tky'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
 
-  // Wait for canvas to have real layout dimensions
+  // ── Config (matches demo.tsx, adapted for dark portfolio) ──────────────
+  const MARKERS = [
+    { id: 'ams', location: [52.37,   4.90],   label: 'Amsterdam', size: 0.06 },
+    { id: 'tyo', location: [35.68, 139.65],   label: 'Tokyo',     size: 0.06 },
+  ];
+  const ARCS = [
+    { id: 'ams-tyo', from: [52.37, 4.90], to: [35.68, 139.65] },
+  ];
+  const CFG = {
+    markerColor:   [0.35, 0.55, 1.0],
+    baseColor:     [0.12, 0.16, 0.38],
+    arcColor:      [0.35, 0.55, 1.0],
+    glowColor:     [0.20, 0.35, 0.90],
+    dark:          1,
+    mapBrightness: 7,
+    markerSize:    0.06,
+    markerElev:    0.01,
+    arcWidth:      0.6,
+    arcHeight:     0.28,
+    speed:         0.003,
+    theta:         0.18,
+    diffuse:       1.2,
+    mapSamples:    16000,
+  };
+
+  // ── Pointer / drag state (from React component) ────────────────────────
+  let pointerDown = null;          // { x, y }
+  let lastPointer = null;          // { x, y, t }
+  let dragOffset  = { phi: 0, theta: 0 };
+  let velocity    = { phi: 0, theta: 0 };
+  let phiOffset   = 0;
+  let thetaOffset = 0;
+  let isPaused    = false;
+
+  canvas.addEventListener('pointerdown', e => {
+    pointerDown = { x: e.clientX, y: e.clientY };
+    canvas.style.cursor = 'grabbing';
+    isPaused = true;
+  });
+  window.addEventListener('pointermove', e => {
+    if (!pointerDown) return;
+    const dx = e.clientX - pointerDown.x;
+    const dy = e.clientY - pointerDown.y;
+    dragOffset = { phi: dx / 300, theta: dy / 1000 };
+    const now = Date.now();
+    if (lastPointer) {
+      const dt = Math.max(now - lastPointer.t, 1);
+      const maxV = 0.15;
+      velocity = {
+        phi:   Math.max(-maxV, Math.min(maxV, ((e.clientX - lastPointer.x) / dt) * 0.3)),
+        theta: Math.max(-maxV, Math.min(maxV, ((e.clientY - lastPointer.y) / dt) * 0.08)),
+      };
+    }
+    lastPointer = { x: e.clientX, y: e.clientY, t: now };
+  }, { passive: true });
+  window.addEventListener('pointerup', () => {
+    if (pointerDown) {
+      phiOffset   += dragOffset.phi;
+      thetaOffset += dragOffset.theta;
+      dragOffset   = { phi: 0, theta: 0 };
+      lastPointer  = null;
+    }
+    pointerDown = null;
+    canvas.style.cursor = 'grab';
+    isPaused = false;
+  }, { passive: true });
+
+  // ── Wait for real layout width ─────────────────────────────────────────
   function waitForSize() {
     return new Promise(resolve => {
       if (canvas.offsetWidth > 0) return resolve(canvas.offsetWidth);
@@ -2151,142 +2219,81 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       setTimeout(() => { ro.disconnect(); resolve(400); }, 2000);
     });
   }
-
   const width = await waitForSize();
 
-  // Try loading cobe from CDN
+  // ── Load cobe ──────────────────────────────────────────────────────────
   let createGlobe = null;
   for (const url of [
     'https://cdn.jsdelivr.net/npm/cobe@0.6.3/dist/cobe.esm.js',
     'https://esm.sh/cobe@0.6.3',
   ]) {
-    try {
-      const mod = await import(url);
-      createGlobe = mod.default || mod;
-      break;
-    } catch (_) {}
+    try { const m = await import(url); createGlobe = m.default || m; break; }
+    catch (_) {}
   }
 
-  if (createGlobe) {
-    let phi = 1.5;
-    createGlobe(canvas, {
-      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-      width,
-      height: width,
-      phi,
-      theta: 0.2,
-      dark: 1,
-      diffuse: 1.2,
-      mapSamples: 16000,
-      mapBrightness: 6,
-      baseColor: [0.18, 0.22, 0.45],
-      markerColor: [0.35, 0.55, 1.0],
-      glowColor: [0.25, 0.45, 1.0],
-      markers: [
-        { location: [52.37, 4.90],   size: 0.07 },
-        { location: [35.68, 139.65], size: 0.07 },
-      ],
-      onRender: (state) => { state.phi = phi; phi += 0.003; }
-    });
-  } else {
-    // Canvas 2D fallback — no external dependencies
-    drawFallback(canvas, width);
-  }
+  if (!createGlobe) { canvas.style.opacity = '1'; return; }
 
-  canvas.style.opacity = '1';
-})();
+  // ── Init globe (mirrors the useEffect in Globe component) ─────────────
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let phi = 0;
+  let animId;
 
-function drawFallback(canvas, size) {
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width  = size * DPR;
-  canvas.height = size * DPR;
-  const ctx = canvas.getContext('2d');
-  ctx.scale(DPR, DPR);
-  const CX = size / 2, CY = size / 2, R = size * 0.42;
-
-  function ll3(lat, lon) {
-    const φ = lat*Math.PI/180, λ = lon*Math.PI/180;
-    return [Math.cos(φ)*Math.sin(λ), Math.sin(φ), Math.cos(φ)*Math.cos(λ)];
-  }
-  function rotY(p, θ) {
-    return [p[0]*Math.cos(θ)-p[2]*Math.sin(θ), p[1], p[0]*Math.sin(θ)+p[2]*Math.cos(θ)];
-  }
-  function proj(p) { return [CX+p[0]*R, CY-p[1]*R, p[2]]; }
-  function slerp(a,b,t) {
-    const dot=Math.min(1,Math.max(-1,a[0]*b[0]+a[1]*b[1]+a[2]*b[2]));
-    const Ω=Math.acos(dot);
-    if(Ω<1e-4) return [a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1]),a[2]+t*(b[2]-a[2])];
-    const s=Math.sin(Ω), sa=Math.sin((1-t)*Ω)/s, sb=Math.sin(t*Ω)/s;
-    return [a[0]*sa+b[0]*sb,a[1]*sa+b[1]*sb,a[2]*sa+b[2]*sb];
-  }
-
-  const AMS=ll3(52.37,4.90), TKY=ll3(35.68,139.65);
-  const N=120, arcBase=Array.from({length:N+1},(_,i)=>{
-    const t=i/N, pt=slerp(AMS,TKY,t), h=1+Math.sin(t*Math.PI)*0.3;
-    return [pt[0]*h,pt[1]*h,pt[2]*h];
+  const globe = createGlobe(canvas, {
+    devicePixelRatio: dpr,
+    width,
+    height: width,
+    phi: 0,
+    theta: CFG.theta,
+    dark: CFG.dark,
+    diffuse: CFG.diffuse,
+    mapSamples: CFG.mapSamples,
+    mapBrightness: CFG.mapBrightness,
+    baseColor: CFG.baseColor,
+    markerColor: CFG.markerColor,
+    glowColor: CFG.glowColor,
+    markerElevation: CFG.markerElev,
+    markers: MARKERS.map(m => ({ location: m.location, size: m.size, id: m.id })),
+    arcs:    ARCS.map(a => ({ from: a.from, to: a.to, id: a.id })),
+    arcColor:  CFG.arcColor,
+    arcWidth:  CFG.arcWidth,
+    arcHeight: CFG.arcHeight,
+    opacity: 0.75,
+    onRender(state) {},   // we use globe.update() in animate instead
   });
 
-  let θ=-1.3, arcT=0;
-  function frame() {
-    ctx.clearRect(0,0,size,size);
-    // Globe glow
-    const g=ctx.createRadialGradient(CX,CY,R*0.6,CX,CY,R*1.3);
-    g.addColorStop(0,'rgba(0,82,255,0.08)'); g.addColorStop(1,'rgba(0,82,255,0)');
-    ctx.beginPath(); ctx.arc(CX,CY,R*1.3,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
-    // Border
-    ctx.beginPath(); ctx.arc(CX,CY,R,0,Math.PI*2);
-    ctx.strokeStyle='rgba(100,140,255,0.2)'; ctx.lineWidth=1; ctx.stroke();
-    // Grid
-    for(let lat=-75;lat<=75;lat+=15){
-      ctx.beginPath(); let pen=false;
-      for(let lon=-180;lon<=180;lon+=3){
-        const [sx,sy,z]=proj(rotY(ll3(lat,lon),θ));
-        if(z>0){pen?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);pen=true;}else pen=false;
+  function animate() {
+    if (!isPaused) {
+      phi += CFG.speed;
+      // Inertia decay
+      if (Math.abs(velocity.phi) > 0.0001 || Math.abs(velocity.theta) > 0.0001) {
+        phiOffset   += velocity.phi;
+        thetaOffset += velocity.theta;
+        velocity.phi   *= 0.95;
+        velocity.theta *= 0.95;
       }
-      ctx.strokeStyle='rgba(100,140,255,0.12)'; ctx.lineWidth=0.5; ctx.stroke();
+      // Clamp vertical tilt
+      const tMin = -0.4, tMax = 0.4;
+      if (thetaOffset < tMin) thetaOffset += (tMin - thetaOffset) * 0.1;
+      if (thetaOffset > tMax) thetaOffset += (tMax - thetaOffset) * 0.1;
     }
-    for(let lon=0;lon<360;lon+=20){
-      ctx.beginPath(); let pen=false;
-      for(let lat=-90;lat<=90;lat+=3){
-        const [sx,sy,z]=proj(rotY(ll3(lat,lon),θ));
-        if(z>0){pen?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);pen=true;}else pen=false;
-      }
-      ctx.strokeStyle='rgba(100,140,255,0.12)'; ctx.lineWidth=0.5; ctx.stroke();
-    }
-    // Static arc
-    ctx.beginPath(); let pd=false;
-    for(let i=0;i<=N;i++){
-      const [sx,sy,z]=proj(rotY(arcBase[i],θ));
-      if(z>-0.1){pd?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);pd=true;}else pd=false;
-    }
-    ctx.strokeStyle='rgba(100,160,255,0.25)'; ctx.lineWidth=1.5; ctx.stroke();
-    // Traveling dot
-    const head=Math.floor(arcT*N), DASH=20;
-    ctx.beginPath();
-    for(let i=DASH;i>=0;i--){
-      const idx=(head-i+N+1)%(N+1);
-      const [sx,sy]=proj(rotY(arcBase[idx],θ));
-      i===DASH?ctx.moveTo(sx,sy):ctx.lineTo(sx,sy);
-    }
-    ctx.strokeStyle='rgba(160,200,255,0.9)'; ctx.lineWidth=2; ctx.stroke();
-    // City dots
-    [[52.37,4.90,'AMS'],[35.68,139.65,'TYO']].forEach(([lat,lon,lbl])=>{
-      const [sx,sy,z]=proj(rotY(ll3(lat,lon),θ));
-      if(z<=0) return;
-      const gd=ctx.createRadialGradient(sx,sy,0,sx,sy,12);
-      gd.addColorStop(0,'rgba(120,180,255,0.5)'); gd.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.beginPath(); ctx.arc(sx,sy,12,0,Math.PI*2); ctx.fillStyle=gd; ctx.fill();
-      ctx.beginPath(); ctx.arc(sx,sy,3.5,0,Math.PI*2);
-      ctx.fillStyle='rgba(180,210,255,0.95)'; ctx.fill();
-      ctx.font=`bold ${size*0.024}px DM Sans,sans-serif`;
-      ctx.fillStyle='rgba(180,210,255,0.8)';
-      ctx.fillText(lbl, sx+8, sy-7);
+    globe.update({
+      phi:   phi + phiOffset + dragOffset.phi,
+      theta: CFG.theta + thetaOffset + dragOffset.theta,
+      dark:          CFG.dark,
+      mapBrightness: CFG.mapBrightness,
+      markerColor:   CFG.markerColor,
+      baseColor:     CFG.baseColor,
+      arcColor:      CFG.arcColor,
+      markerElevation: CFG.markerElev,
+      markers: MARKERS.map(m => ({ location: m.location, size: m.size, id: m.id })),
+      arcs:    ARCS.map(a => ({ from: a.from, to: a.to, id: a.id })),
     });
-    θ+=0.0015; arcT=(arcT+0.002)%1;
-    requestAnimationFrame(frame);
+    animId = requestAnimationFrame(animate);
   }
-  frame();
-}
+  animate();
+
+  setTimeout(() => { canvas.style.opacity = '1'; });
+})();
 </script>
 </body>
 </html>

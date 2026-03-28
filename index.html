@@ -62,12 +62,12 @@ strong { color: var(--text); font-weight: 600; }
 }
 .section-glow-a {
   width: 550px; height: 550px;
-  background: rgba(0,82,255,0.09);
+  background: rgba(0,82,255,0.12);
   animation: glow1 13s ease-in-out infinite alternate;
 }
 .section-glow-b {
   width: 380px; height: 380px;
-  background: rgba(0,40,200,0.07);
+  background: rgba(0,40,200,0.09);
   animation: glow2 18s ease-in-out infinite alternate;
 }
 .section-header { max-width: 680px; margin-bottom: 3.5rem; }
@@ -203,7 +203,8 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 }
 
 /* ======== HERO GLOWS ======== */
-#home { position: relative; overflow: hidden; }
+#home { position: relative; overflow-x: hidden; overflow-y: visible; }
+#wie-ben-ik { overflow: visible; }
 .hero-glow {
   position: absolute; border-radius: 50%;
   pointer-events: none; filter: blur(100px); z-index: 0;
@@ -351,7 +352,7 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 .logo-track {
   display: flex; gap: 1.8rem; align-items: center;
   width: max-content; white-space: nowrap;
-  animation: logoScroll 22s linear infinite;
+  animation: logoScroll 60s linear infinite;
   font-size: .78rem; font-weight: 600;
   letter-spacing: .04em; text-transform: uppercase;
   color: rgba(255,255,255,0.32);
@@ -1095,6 +1096,47 @@ footer {
   letter-spacing: -0.01em;
 }
 
+/* ======== MICRO-ANIMATIONS (IDLE) ======== */
+
+/* Foto-kaart: zacht zweven */
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-7px); }
+}
+.wie-photo-card { animation: floatCard 6s ease-in-out infinite; }
+
+/* Skill-card borders pulsen staggered (hergebruikt borderPulse) */
+.skill-card:nth-child(1) .skill-card-front { animation: borderPulse 5s ease-in-out infinite 0s; }
+.skill-card:nth-child(2) .skill-card-front { animation: borderPulse 5s ease-in-out infinite 1.2s; }
+.skill-card:nth-child(3) .skill-card-front { animation: borderPulse 5s ease-in-out infinite 2.5s; }
+.skill-card:nth-child(4) .skill-card-front { animation: borderPulse 5s ease-in-out infinite 3.8s; }
+
+/* Testimonial-cards: subtiele shimmer sweep */
+@keyframes shimmerSweep {
+  0%          { transform: translateX(-150%); }
+  100%        { transform: translateX(350%); }
+}
+.testimonial-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 35%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.028), transparent);
+  animation: shimmerSweep 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.testimonial-card:nth-child(2)::after { animation-delay: 2.7s; }
+.testimonial-card:nth-child(3)::after { animation-delay: 5.4s; }
+
+/* MBTI-kaart iconen: subtiel ademen */
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1);    opacity: .85; }
+  50%       { transform: scale(1.07); opacity: 1;   }
+}
+.mbti-card img { animation: iconPulse 4.5s ease-in-out infinite; }
+.mbti-card:nth-child(2) img { animation-delay: 1.5s; }
+.mbti-card:nth-child(3) img { animation-delay: 3s;   }
+
 /* ======== RESPONSIVE ======== */
 @media (max-width: 1024px) {
   .watwil-grid       { grid-template-columns: 1fr; gap: 3rem; }
@@ -1240,7 +1282,6 @@ footer {
 
 <!-- ======== WIE BEN IK ======== -->
 <section id="wie-ben-ik" class="section">
-  <div class="section-glow section-glow-a" style="top:-180px;right:-80px;animation-delay:0s"></div>
   <div class="section-glow section-glow-b" style="bottom:-150px;left:-60px;animation-delay:2s"></div>
   <div class="section-inner">
 
@@ -1679,7 +1720,7 @@ footer {
 
           <!-- Save the Children -->
           <div class="case-card">
-            <img class="case-img" src="STC.jpeg" alt="Save the Children">
+            <img class="case-img" src="save-the-children-customer-story-header.png" alt="Save the Children">
             <div class="case-overlay">
               <img class="case-logo" src="Logo's/STC.png" alt="Save the Children">
               <div class="case-row">
@@ -1739,7 +1780,7 @@ footer {
             </div>
           </div>
           <div class="case-card">
-            <img class="case-img" src="STC.jpeg" alt="Save the Children">
+            <img class="case-img" src="save-the-children-customer-story-header.png" alt="Save the Children">
             <div class="case-overlay">
               <img class="case-logo" src="Logo's/STC.png" alt="Save the Children">
               <div class="case-row"><span class="case-company">TBWA\NEBOKO</span><span class="case-badge">LIVE</span></div>

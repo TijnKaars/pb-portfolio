@@ -256,12 +256,10 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 .globe-wrap {
   position: relative;
   z-index: 1;
-  width: min(600px, 88vw);
+  width: min(700px, 92vw);
   aspect-ratio: 1;
-  margin-top: -40px;
+  margin-top: 1rem;
   flex-shrink: 0;
-  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
-  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
 }
 #globe-canvas {
   width: 100%; height: 100%;
@@ -1273,8 +1271,8 @@ import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
 
     createGlobe(canvas, {
       devicePixelRatio: dpr,
-      width,          // CSS pixels — cobe multiplies by dpr internally
-      height: width,
+      width:  width * dpr,   // physical pixels (cobe sets canvas.width to this)
+      height: width * dpr,
       phi: 0,
       theta,
       dark: 0,

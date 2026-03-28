@@ -6,7 +6,7 @@
 <title>Tijn Kaars — Strateeg &amp; Digital Marketeer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400;1,9..40,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400;1,9..40,500&family=Instrument+Serif&display=swap" rel="stylesheet">
 <style>
 /* ======== RESET ======== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -829,26 +829,27 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 /* ======== CASES CAROUSEL ======== */
 .cases-section { margin-top: 5rem; }
 
-/* Heading with side panels */
+/* Heading with pulsing glow */
 .cases-heading-wrap {
   position: relative;
   text-align: center;
   padding: 3rem 0 3.5rem;
   overflow: hidden;
 }
-.cases-heading-panel {
+.cases-heading-wrap::before {
+  content: '';
   position: absolute;
-  top: 0; bottom: 0;
-  width: 36%;
-  background: #03080f;
+  width: 700px; height: 360px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,82,255,0.22) 0%, transparent 68%);
+  animation: casesGlowPulse 4s ease-in-out infinite;
+  pointer-events: none;
 }
-.cases-heading-panel--left {
-  left: 0;
-  clip-path: polygon(0 0, 100% 0, 74% 100%, 0 100%);
-}
-.cases-heading-panel--right {
-  right: 0;
-  clip-path: polygon(26% 0, 100% 0, 100% 100%, 0 100%);
+@keyframes casesGlowPulse {
+  0%, 100% { opacity: 0.7; transform: translate(-50%,-50%) scale(1); }
+  50%       { opacity: 1;   transform: translate(-50%,-50%) scale(1.18); }
 }
 .cases-heading-inner {
   position: relative; z-index: 1;
@@ -882,59 +883,70 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   width: max-content;
   animation: casesScroll 40s linear infinite;
 }
-.cases-track:hover { animation-play-state: paused; }
 @keyframes casesScroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 .case-card {
-  width: 400px;
-  border-radius: 18px;
+  width: 380px;
+  height: 500px;
+  border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: #0b1120;
+  border: 1px solid rgba(255,255,255,0.14);
   flex-shrink: 0;
   cursor: default;
+  position: relative;
 }
 .case-img {
-  width: 100%; height: 220px;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   object-fit: cover; display: block;
 }
 .case-img-ph {
-  width: 100%; height: 220px;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   display: block;
 }
-.case-content {
-  padding: 1.5rem 1.5rem 1.6rem;
+.case-overlay {
+  position: absolute;
+  bottom: 12px; left: 12px; right: 12px;
+  background: rgba(6,6,10,0.93);
+  border-radius: 14px;
+  padding: 1.2rem 1.3rem 1.3rem;
 }
-.case-brand {
-  font-size: 1.4rem; font-weight: 800;
-  color: var(--text); margin-bottom: .45rem;
-  letter-spacing: -0.02em;
+.case-logo {
+  height: 28px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  object-position: left center;
+  margin-bottom: .7rem;
 }
 .case-row {
   display: flex; align-items: center; gap: .5rem;
-  margin-bottom: .8rem;
+  margin-bottom: .7rem;
 }
-.case-company { font-size: .82rem; color: var(--text-sub); }
+.case-company { font-size: .8rem; color: var(--text-sub); }
 .case-badge {
-  font-size: .62rem; font-weight: 700;
+  font-size: .6rem; font-weight: 700;
   letter-spacing: .08em; text-transform: uppercase;
   background: var(--blue); color: #fff;
-  border-radius: 5px; padding: .2rem .5rem;
+  border-radius: 5px; padding: .18rem .5rem;
 }
 .case-desc {
-  font-size: .84rem; color: rgba(255,255,255,0.42);
-  line-height: 1.72; margin-bottom: 1.1rem;
+  font-size: .82rem; color: rgba(255,255,255,0.42);
+  line-height: 1.7; margin-bottom: 1rem;
 }
 .case-tags {
-  display: flex; gap: .5rem; flex-wrap: wrap;
+  display: flex; gap: .45rem; flex-wrap: wrap;
 }
 .case-tag {
-  font-size: .77rem; color: rgba(255,255,255,0.55);
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 999px; padding: .3rem .75rem;
+  font-size: .75rem; color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 999px; padding: .27rem .7rem;
 }
 
 /* ======== SECTION BRIDGE ======== */
@@ -1146,12 +1158,7 @@ footer {
   <div class="hero-glow hero-glow-2"></div>
   <div class="hero-inner">
     <div class="hero-content">
-      <div class="hero-badge">
-        <span class="badge-new">HvA</span>
-        Student Digital Marketing &middot; 2025
-      </div>
-      <p class="hero-eyebrow" id="eyebrow"></p>
-      <h1 class="hero-name">TIJN<br><span style="color:var(--ice)">KAARS</span></h1>
+      <h1 class="hero-name">TIJN <span style="font-family:'Instrument Serif',serif;color:#fff;font-weight:400">KAARS</span></h1>
       <p class="hero-quote">"Strategie zonder ambitie is een plan. Ambitie zonder strategie is een droom."</p>
       <p class="hero-desc">
         22 jaar, student Commerciële Economie (Digital Marketing) aan de
@@ -1169,30 +1176,52 @@ footer {
         <span class="hero-logos-label">Gewerkt voor</span>
         <div class="logo-carousel">
           <div class="logo-track">
-            <span>TBWA\NEBOKO</span>
-            <span class="logo-dot">&middot;</span>
-            <span>McDonald's</span>
-            <span class="logo-dot">&middot;</span>
-            <span>Odido</span>
-            <span class="logo-dot">&middot;</span>
-            <span>Save the Children</span>
-            <span class="logo-dot">&middot;</span>
-            <span>Mitsuba</span>
-            <span class="logo-dot">&middot;</span>
-            <span>Hogeschool van Amsterdam</span>
-            <span class="logo-dot">&middot;</span>
-            <span>TBWA\NEBOKO</span>
-            <span class="logo-dot">&middot;</span>
-            <span>McDonald's</span>
-            <span class="logo-dot">&middot;</span>
-            <span>Odido</span>
-            <span class="logo-dot">&middot;</span>
-            <span>Save the Children</span>
-            <span class="logo-dot">&middot;</span>
-            <span>Mitsuba</span>
-            <span class="logo-dot">&middot;</span>
-            <span>Hogeschool van Amsterdam</span>
-            <span class="logo-dot">&middot;</span>
+            <span>TBWA\NEBOKO</span><span class="logo-dot">&middot;</span>
+            <span>McDonald's</span><span class="logo-dot">&middot;</span>
+            <span>Odido</span><span class="logo-dot">&middot;</span>
+            <span>Save the Children</span><span class="logo-dot">&middot;</span>
+            <span>Mitsuba</span><span class="logo-dot">&middot;</span>
+            <span>ING</span><span class="logo-dot">&middot;</span>
+            <span>Bol.com</span><span class="logo-dot">&middot;</span>
+            <span>Adidas</span><span class="logo-dot">&middot;</span>
+            <span>Albert Heijn</span><span class="logo-dot">&middot;</span>
+            <span>Ben</span><span class="logo-dot">&middot;</span>
+            <span>Bobbitt</span><span class="logo-dot">&middot;</span>
+            <span>Centraal Beheer</span><span class="logo-dot">&middot;</span>
+            <span>DHL</span><span class="logo-dot">&middot;</span>
+            <span>Eco</span><span class="logo-dot">&middot;</span>
+            <span>Eurojackpot</span><span class="logo-dot">&middot;</span>
+            <span>Mora</span><span class="logo-dot">&middot;</span>
+            <span>Nissan</span><span class="logo-dot">&middot;</span>
+            <span>NS</span><span class="logo-dot">&middot;</span>
+            <span>Optimum Nutrition</span><span class="logo-dot">&middot;</span>
+            <span>Philips</span><span class="logo-dot">&middot;</span>
+            <span>Praxis</span><span class="logo-dot">&middot;</span>
+            <span>Unox</span><span class="logo-dot">&middot;</span>
+            <span>Verkade</span><span class="logo-dot">&middot;</span>
+            <span>TBWA\NEBOKO</span><span class="logo-dot">&middot;</span>
+            <span>McDonald's</span><span class="logo-dot">&middot;</span>
+            <span>Odido</span><span class="logo-dot">&middot;</span>
+            <span>Save the Children</span><span class="logo-dot">&middot;</span>
+            <span>Mitsuba</span><span class="logo-dot">&middot;</span>
+            <span>ING</span><span class="logo-dot">&middot;</span>
+            <span>Bol.com</span><span class="logo-dot">&middot;</span>
+            <span>Adidas</span><span class="logo-dot">&middot;</span>
+            <span>Albert Heijn</span><span class="logo-dot">&middot;</span>
+            <span>Ben</span><span class="logo-dot">&middot;</span>
+            <span>Bobbitt</span><span class="logo-dot">&middot;</span>
+            <span>Centraal Beheer</span><span class="logo-dot">&middot;</span>
+            <span>DHL</span><span class="logo-dot">&middot;</span>
+            <span>Eco</span><span class="logo-dot">&middot;</span>
+            <span>Eurojackpot</span><span class="logo-dot">&middot;</span>
+            <span>Mora</span><span class="logo-dot">&middot;</span>
+            <span>Nissan</span><span class="logo-dot">&middot;</span>
+            <span>NS</span><span class="logo-dot">&middot;</span>
+            <span>Optimum Nutrition</span><span class="logo-dot">&middot;</span>
+            <span>Philips</span><span class="logo-dot">&middot;</span>
+            <span>Praxis</span><span class="logo-dot">&middot;</span>
+            <span>Unox</span><span class="logo-dot">&middot;</span>
+            <span>Verkade</span><span class="logo-dot">&middot;</span>
           </div>
         </div>
       </div>
@@ -1486,12 +1515,6 @@ footer {
   </div>
 </section>
 
-<!-- Transition: Wie ben ik → Wat kan ik -->
-<div class="section-bridge" aria-hidden="true">
-  <div class="bridge-panel bridge-panel-left"></div>
-  <div class="bridge-panel bridge-panel-right"></div>
-</div>
-
 <!-- ======== WAT KAN IK ======== -->
 <section id="wat-kan-ik" class="section" style="background:#000">
   <div class="section-inner">
@@ -1627,8 +1650,6 @@ footer {
     <div class="cases-section">
 
       <div class="cases-heading-wrap">
-        <div class="cases-heading-panel cases-heading-panel--left"></div>
-        <div class="cases-heading-panel cases-heading-panel--right"></div>
         <div class="cases-heading-inner">
           <span class="cases-sup">Cases uit de praktijk</span>
           <h3 class="cases-title">Resultaten die<br><span>voor zich spreken.</span></h3>
@@ -1641,9 +1662,9 @@ footer {
 
           <!-- bol.com -->
           <div class="case-card">
-            <div class="case-img-ph" style="background:linear-gradient(145deg,#1a1f35 0%,#0d1228 100%)"></div>
-            <div class="case-content">
-              <div class="case-brand">bol.com</div>
+            <img class="case-img" src="Bol.jpg" alt="bol.com">
+            <div class="case-overlay">
+              <img class="case-logo" src="Logo's/Bol.png" alt="bol.com">
               <div class="case-row">
                 <span class="case-company">TBWA\NEBOKO</span>
                 <span class="case-badge">PITCH GEWONNEN</span>
@@ -1658,9 +1679,9 @@ footer {
 
           <!-- Save the Children -->
           <div class="case-card">
-            <div class="case-img-ph" style="background:linear-gradient(145deg,#0d2035 0%,#0a1825 100%)"></div>
-            <div class="case-content">
-              <div class="case-brand">Save the Children</div>
+            <img class="case-img" src="STC.jpeg" alt="Save the Children">
+            <div class="case-overlay">
+              <img class="case-logo" src="Logo's/STC.png" alt="Save the Children">
               <div class="case-row">
                 <span class="case-company">TBWA\NEBOKO</span>
                 <span class="case-badge">LIVE</span>
@@ -1675,9 +1696,9 @@ footer {
 
           <!-- ING -->
           <div class="case-card">
-            <div class="case-img-ph" style="background:linear-gradient(145deg,#1c1a10 0%,#121108 100%)"></div>
-            <div class="case-content">
-              <div class="case-brand">ING</div>
+            <img class="case-img" src="ING.jpg" alt="ING">
+            <div class="case-overlay">
+              <img class="case-logo" src="Logo's/ING.png" alt="ING">
               <div class="case-row">
                 <span class="case-company">TBWA\NEBOKO</span>
                 <span class="case-badge">WK 2026</span>
@@ -1692,9 +1713,9 @@ footer {
 
           <!-- McDonald's -->
           <div class="case-card">
-            <div class="case-img-ph" style="background:linear-gradient(145deg,#1e1510 0%,#140e09 100%)"></div>
-            <div class="case-content">
-              <div class="case-brand">McDonald's</div>
+            <img class="case-img" src="McDonalds 17.23.46.jpg" alt="McDonald's">
+            <div class="case-overlay">
+              <img class="case-logo" src="Logo's/McDonalds.png" alt="McDonald's">
               <div class="case-row">
                 <span class="case-company">TBWA\NEBOKO</span>
                 <span class="case-badge">6 MAANDEN</span>
@@ -1709,63 +1730,39 @@ footer {
 
           <!-- Duplicates for seamless loop -->
           <div class="case-card">
-            <div class="case-img-ph" style="background:linear-gradient(145deg,#1a1f35 0%,#0d1228 100%)"></div>
-            <div class="case-content">
-              <div class="case-brand">bol.com</div>
-              <div class="case-row">
-                <span class="case-company">TBWA\NEBOKO</span>
-                <span class="case-badge">PITCH GEWONNEN</span>
-              </div>
+            <img class="case-img" src="Bol.jpg" alt="bol.com">
+            <div class="case-overlay">
+              <img class="case-logo" src="Logo's/Bol.png" alt="bol.com">
+              <div class="case-row"><span class="case-company">TBWA\NEBOKO</span><span class="case-badge">PITCH GEWONNEN</span></div>
               <p class="case-desc">Analyse van 10 jaar communicatiegeschiedenis om te achterhalen waarom bol.com marktaandeel verliest. Pitch gewonnen — bol.com is nu klant.</p>
-              <div class="case-tags">
-                <span class="case-tag">Competitive analyse</span>
-                <span class="case-tag">10 jaar data</span>
-              </div>
+              <div class="case-tags"><span class="case-tag">Competitive analyse</span><span class="case-tag">10 jaar data</span></div>
             </div>
           </div>
           <div class="case-card">
-            <div class="case-img-ph" style="background:linear-gradient(145deg,#0d2035 0%,#0a1825 100%)"></div>
-            <div class="case-content">
-              <div class="case-brand">Save the Children</div>
-              <div class="case-row">
-                <span class="case-company">TBWA\NEBOKO</span>
-                <span class="case-badge">LIVE</span>
-              </div>
+            <img class="case-img" src="STC.jpeg" alt="Save the Children">
+            <div class="case-overlay">
+              <img class="case-logo" src="Logo's/STC.png" alt="Save the Children">
+              <div class="case-row"><span class="case-company">TBWA\NEBOKO</span><span class="case-badge">LIVE</span></div>
               <p class="case-desc">Beeldselectie voor een tv-commercial met meer dan €2 miljoen campagnebudget. Meerdere geselecteerde beelden zijn gebruikt in de definitieve uitzending.</p>
-              <div class="case-tags">
-                <span class="case-tag">€2M+ campagne</span>
-                <span class="case-tag">TV-commercial</span>
-              </div>
+              <div class="case-tags"><span class="case-tag">€2M+ campagne</span><span class="case-tag">TV-commercial</span></div>
             </div>
           </div>
           <div class="case-card">
-            <div class="case-img-ph" style="background:linear-gradient(145deg,#1c1a10 0%,#121108 100%)"></div>
-            <div class="case-content">
-              <div class="case-brand">ING</div>
-              <div class="case-row">
-                <span class="case-company">TBWA\NEBOKO</span>
-                <span class="case-badge">WK 2026</span>
-              </div>
+            <img class="case-img" src="ING.jpg" alt="ING">
+            <div class="case-overlay">
+              <img class="case-logo" src="Logo's/ING.png" alt="ING">
+              <div class="case-row"><span class="case-company">TBWA\NEBOKO</span><span class="case-badge">WK 2026</span></div>
               <p class="case-desc">Onderzoek naar maatschappelijke thema's voor de WK 2026 campagne van het Nederlands elftal. Mijn thema is aangenomen en vormt de kern van de campagne.</p>
-              <div class="case-tags">
-                <span class="case-tag">Campagnethema</span>
-                <span class="case-tag">Maatschappelijk onderzoek</span>
-              </div>
+              <div class="case-tags"><span class="case-tag">Campagnethema</span><span class="case-tag">Maatschappelijk onderzoek</span></div>
             </div>
           </div>
           <div class="case-card">
-            <div class="case-img-ph" style="background:linear-gradient(145deg,#1e1510 0%,#140e09 100%)"></div>
-            <div class="case-content">
-              <div class="case-brand">McDonald's</div>
-              <div class="case-row">
-                <span class="case-company">TBWA\NEBOKO</span>
-                <span class="case-badge">6 MAANDEN</span>
-              </div>
+            <img class="case-img" src="McDonalds 17.23.46.jpg" alt="McDonald's">
+            <div class="case-overlay">
+              <img class="case-logo" src="Logo's/McDonalds.png" alt="McDonald's">
+              <div class="case-row"><span class="case-company">TBWA\NEBOKO</span><span class="case-badge">6 MAANDEN</span></div>
               <p class="case-desc">Maandelijkse concurrentieanalyse van 6 merken op alle kanalen. Dagelijkse rapportage bij bijzondere acties van concurrenten voor het Nederlandse team.</p>
-              <div class="case-tags">
-                <span class="case-tag">6 concurrenten</span>
-                <span class="case-tag">Alle kanalen</span>
-              </div>
+              <div class="case-tags"><span class="case-tag">6 concurrenten</span><span class="case-tag">Alle kanalen</span></div>
             </div>
           </div>
 
@@ -1928,18 +1925,13 @@ navLinks.querySelectorAll('a').forEach(a => {
   document.head.appendChild(s);
 })();
 
-// ======== TYPEWRITER EYEBROW ========
+// ======== CASES CAROUSEL SLOW-MOTION HOVER ========
 (function() {
-  const el   = document.getElementById('eyebrow');
-  const text = 'Student \u00B7 Strateeg \u00B7 Sportman';
-  let i = 0;
-  setTimeout(() => {
-    const timer = setInterval(() => {
-      el.textContent = text.slice(0, i + 1);
-      i++;
-      if (i >= text.length) clearInterval(timer);
-    }, 36);
-  }, 500);
+  const carousel = document.querySelector('.cases-carousel');
+  const track    = document.querySelector('.cases-track');
+  if (!carousel || !track) return;
+  carousel.addEventListener('mouseenter', () => track.style.animationDuration = '280s');
+  carousel.addEventListener('mouseleave', () => track.style.animationDuration = '40s');
 })();
 
 // ======== SCROLL REVEAL ========

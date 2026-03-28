@@ -467,10 +467,20 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   padding: 1.2rem 1.3rem;
 }
 .trait-card-front {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: rgba(8,12,28,0.85);
+  border: 1px solid rgba(255,255,255,0.08);
   position: relative;
+  overflow: hidden;
   display: flex; flex-direction: column;
+}
+.trait-card-front::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 65%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,82,255,0.9), transparent);
+  box-shadow: 0 0 28px 8px rgba(0,82,255,0.3);
+  pointer-events: none; z-index: 1;
 }
 .trait-card-icon {
   position: absolute; top: 1rem; right: 1rem;
@@ -530,16 +540,16 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 
 /* Personality box */
 .personality-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px; padding: 2rem;
   animation: borderPulse 4s ease-in-out infinite;
   height: 100%; box-sizing: border-box;
   transition: box-shadow .3s, border-color .3s;
 }
 .personality-box:hover {
-  border-color: rgba(0,82,255,0.5);
-  box-shadow: 0 0 48px 4px rgba(0,82,255,0.38), 0 0 16px rgba(0,82,255,0.25);
+  border-color: rgba(0,82,255,0.3);
+  box-shadow: 0 0 20px rgba(0,82,255,0.14), 0 0 6px rgba(0,82,255,0.08);
 }
 @keyframes borderPulse {
   0%,100% { border-color: var(--border); }
@@ -602,9 +612,9 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   transition: border-color .3s, background .3s;
 }
 .mbti-card:hover {
-  background: rgba(0,82,255,0.10);
-  border-color: rgba(0,82,255,0.5);
-  box-shadow: 0 0 48px 4px rgba(0,82,255,0.38), 0 0 16px rgba(0,82,255,0.25);
+  background: rgba(0,82,255,0.07);
+  border-color: rgba(0,82,255,0.3);
+  box-shadow: 0 0 20px rgba(0,82,255,0.14), 0 0 6px rgba(0,82,255,0.08);
 }
 .mbti-card img {
   width: 72px;
@@ -1150,6 +1160,27 @@ footer {
 .skill-card:nth-child(2) .skill-card-front { animation: skillGlowPulse 5s ease-in-out infinite 1.3s; }
 .skill-card:nth-child(3) .skill-card-front { animation: skillGlowPulse 5s ease-in-out infinite 2.6s; }
 .skill-card:nth-child(4) .skill-card-front { animation: skillGlowPulse 5s ease-in-out infinite 3.9s; }
+
+/* Trait cards: verticale shimmer sweep (synced met testimonials, 8s cyclus) */
+@keyframes shimmerSweepV {
+  0%   { transform: translateY(-150%); }
+  100% { transform: translateY(350%); }
+}
+.trait-card-front::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  height: 30%; width: 100%;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.028), transparent);
+  animation: shimmerSweepV 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.trait-card:nth-child(1) .trait-card-front::after { animation-delay: 0s; }
+.trait-card:nth-child(2) .trait-card-front::after { animation-delay: 1.3s; }
+.trait-card:nth-child(3) .trait-card-front::after { animation-delay: 2.7s; }
+.trait-card:nth-child(4) .trait-card-front::after { animation-delay: 4.0s; }
+.trait-card:nth-child(5) .trait-card-front::after { animation-delay: 5.4s; }
+.trait-card:nth-child(6) .trait-card-front::after { animation-delay: 6.7s; }
 
 /* Testimonial-cards: subtiele shimmer sweep */
 @keyframes shimmerSweep {

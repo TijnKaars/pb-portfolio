@@ -272,21 +272,6 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   touch-action: none;
   display: block;
 }
-.globe-label {
-  position: absolute;
-  font-family: var(--font-body);
-  font-size: .55rem; font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: #fff;
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,255,255,0.18);
-  padding: 2px 7px 2px 7px;
-  border-radius: 4px;
-  pointer-events: none; white-space: nowrap;
-  translate: -50% -100%;
-  margin-top: -12px;
-  transition: opacity .5s;
-}
 
 /* ======== MARQUEE ======== */
 .marquee-wrapper {
@@ -1212,115 +1197,118 @@ document.querySelectorAll('.trait-card').forEach(card => {
 </script>
 
 <script type="module">
-// ======== GLOBE ========
-// Uses standard cobe onRender API (globe.update() does not exist in 0.6.3)
+// ======== GLOBE — 21st.dev demo (9 cities, 2 arcs) ========
 import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
 
 (function () {
   const canvas = document.getElementById('globe-canvas');
-  const wrap   = canvas && canvas.parentElement;
-  if (!canvas || !wrap) return;
+  if (!canvas) return;
 
-  const THETA = 0.3;
-  const MARKERS = [
-    { location: [52.3676,   4.9041], label: 'AMSTERDAM' },
-    { location: [35.6762, 139.6503], label: 'TOKYO'     },
+  const markers = [
+    { location: [37.7595,  -122.4367], size: 0.025 }, // SF
+    { location: [40.7128,   -74.006],  size: 0.025 }, // NYC
+    { location: [35.6762,  139.6503],  size: 0.025 }, // Tokyo
+    { location: [51.5074,   -0.1278],  size: 0.025 }, // London
+    { location: [-33.8688, 151.2093],  size: 0.025 }, // Sydney
+    { location: [-33.9249,  18.4241],  size: 0.025 }, // Cape Town
+    { location: [25.2048,   55.2708],  size: 0.025 }, // Dubai
+    { location: [48.8566,    2.3522],  size: 0.025 }, // Paris
+    { location: [-23.5505, -46.6333],  size: 0.025 }, // São Paulo
   ];
 
-  // Label elements
-  const labelEls = MARKERS.map(m => {
-    const el = document.createElement('div');
-    el.className = 'globe-label';
-    el.textContent = m.label;
-    el.style.opacity = '0';
-    el.style.position = 'absolute';
-    wrap.appendChild(el);
-    return el;
-  });
+  const arcs = [
+    { from: [37.7595, -122.4367], to: [35.6762, 139.6503] }, // SF → Tokyo
+    { from: [40.7128,  -74.006],  to: [51.5074,  -0.1278] }, // NYC → London
+  ];
 
-  // Drag state
-  let pointerDown = null, lastX = 0;
-  let phiOffset = 0, dragDelta = 0;
-  let velPhi = 0;
-  let isPaused = false;
+  // Drag/interaction state — mirrors the React component refs exactly
+  let pointerInteracting = null;
+  let lastPointer = null;
+  let dragOffset = { phi: 0, theta: 0 };
+  let velocity   = { phi: 0, theta: 0 };
+  let phiOffset   = 0;
+  let thetaOffset = 0;
+  let isPaused    = false;
 
   canvas.addEventListener('pointerdown', e => {
-    pointerDown = e.clientX; lastX = e.clientX;
+    pointerInteracting = { x: e.clientX, y: e.clientY };
     canvas.style.cursor = 'grabbing';
     isPaused = true;
   });
   window.addEventListener('pointermove', e => {
-    if (pointerDown === null) return;
-    velPhi    = (e.clientX - lastX) / 300;
-    dragDelta = (e.clientX - pointerDown) / 300;
-    lastX = e.clientX;
+    if (!pointerInteracting) return;
+    const dx = e.clientX - pointerInteracting.x;
+    const dy = e.clientY - pointerInteracting.y;
+    dragOffset = { phi: dx / 300, theta: dy / 1000 };
+    const now = Date.now();
+    if (lastPointer) {
+      const dt  = Math.max(now - lastPointer.t, 1);
+      const max = 0.15;
+      velocity = {
+        phi:   Math.max(-max, Math.min(max, ((e.clientX - lastPointer.x) / dt) * 0.3)),
+        theta: Math.max(-max, Math.min(max, ((e.clientY - lastPointer.y) / dt) * 0.08)),
+      };
+    }
+    lastPointer = { x: e.clientX, y: e.clientY, t: now };
   }, { passive: true });
   window.addEventListener('pointerup', () => {
-    if (pointerDown !== null) { phiOffset += dragDelta; dragDelta = 0; pointerDown = null; }
+    if (pointerInteracting) {
+      phiOffset   += dragOffset.phi;
+      thetaOffset += dragOffset.theta;
+      dragOffset   = { phi: 0, theta: 0 };
+      lastPointer  = null;
+    }
+    pointerInteracting = null;
     canvas.style.cursor = 'grab';
     isPaused = false;
   }, { passive: true });
 
-  // Projection
-  function ll2v(lat, lon) {
-    const la = lat * Math.PI / 180, lo = lon * Math.PI / 180;
-    return [Math.cos(la) * Math.sin(lo), -Math.sin(la), Math.cos(la) * Math.cos(lo)];
-  }
-  function project(v, curPhi, W) {
-    let [x, y, z] = v;
-    const cp = Math.cos(curPhi), sp = Math.sin(curPhi);
-    const xr =  x * cp + z * sp, zt = -x * sp + z * cp;
-    const ct = Math.cos(THETA),   st = Math.sin(THETA);
-    const yr =  y * ct + zt * st;
-    const zf = -y * st + zt * ct;
-    const R  = W / 2;
-    return { sx: W / 2 + xr * R, sy: W / 2 + yr * R, depth: zf };
-  }
-
-  // Init globe with onRender (the ONLY animation API in cobe 0.6.3)
   function init() {
-    const W = canvas.offsetWidth;
-    if (!W) return;
+    const width = canvas.offsetWidth;
+    if (!width) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
     let phi = 0;
+    const theta = 0.2, speed = 0.003;
+    const tMin = -0.4, tMax = 0.4;
 
-    const globe = createGlobe(canvas, {
+    createGlobe(canvas, {
       devicePixelRatio: dpr,
-      width:  W * dpr,
-      height: W * dpr,
+      width,          // CSS pixels — cobe multiplies by dpr internally
+      height: width,
       phi: 0,
-      theta: THETA,
-      dark: 1,
-      diffuse: 1.2,
+      theta,
+      dark: 0,
+      diffuse: 1.5,
       mapSamples: 16000,
-      mapBrightness: 6,
-      baseColor:   [0.78, 0.78, 0.84],
-      markerColor: [0.00, 0.32, 1.00],
-      glowColor:   [0.22, 0.22, 0.36],
-      markers: MARKERS.map(m => ({ location: m.location, size: 0.06 })),
+      mapBrightness: 10,
+      baseColor:       [1, 1, 1],
+      markerColor:     [0.3, 0.45, 0.85],
+      glowColor:       [0.94, 0.93, 0.91],
+      markerElevation: 0.01,
+      markers,
+      arcs,
+      arcColor:  [0.3, 0.45, 0.85],
+      arcWidth:  0.5,
+      arcHeight: 0.25,
+      opacity:   0.7,
       onRender(state) {
         if (!isPaused) {
-          phiOffset += velPhi;
-          velPhi    *= 0.93;
-          phi       += 0.003;
+          phi += speed;
+          if (Math.abs(velocity.phi) > 0.0001 || Math.abs(velocity.theta) > 0.0001) {
+            phiOffset   += velocity.phi;
+            thetaOffset += velocity.theta;
+            velocity.phi   *= 0.95;
+            velocity.theta *= 0.95;
+          }
+          if      (thetaOffset < tMin) thetaOffset += (tMin - thetaOffset) * 0.1;
+          else if (thetaOffset > tMax) thetaOffset += (tMax - thetaOffset) * 0.1;
         }
-        const curPhi = phi + phiOffset + dragDelta;
-        state.phi   = curPhi;
-        state.theta = THETA;
-
-        // Update labels
-        MARKERS.forEach((m, i) => {
-          const p   = project(ll2v(m.location[0], m.location[1]), curPhi, W);
-          const vis = p.depth > 0.15 ? Math.min(1, (p.depth - 0.15) * 5) : 0;
-          labelEls[i].style.opacity = vis;
-          labelEls[i].style.left   = p.sx + 'px';
-          labelEls[i].style.top    = (p.sy - 16) + 'px';
-        });
+        state.phi   = phi + phiOffset   + dragOffset.phi;
+        state.theta = theta + thetaOffset + dragOffset.theta;
       },
     });
 
-    canvas.style.opacity = '1';
+    setTimeout(() => canvas && (canvas.style.opacity = '1'));
   }
 
   if (canvas.offsetWidth > 0) {

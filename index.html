@@ -735,6 +735,99 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   font-size: .88rem; color: var(--text-sub); line-height: 1.78;
 }
 
+/* Skill flip cards */
+.skill-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+.skill-card {
+  perspective: 900px;
+  cursor: pointer;
+  min-height: 300px;
+}
+.skill-card-inner {
+  display: grid;
+  width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(.4,0,.2,1);
+}
+.skill-card:hover .skill-card-inner {
+  transform: rotateY(180deg);
+}
+.skill-card-front,
+.skill-card-back {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 16px;
+  padding: 1.75rem;
+  display: flex; flex-direction: column;
+}
+.skill-card-front {
+  background: rgba(8,12,28,0.85);
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+}
+.skill-card-back {
+  background: rgba(0,82,255,0.07);
+  border: 1px solid rgba(0,82,255,0.25);
+  transform: rotateY(180deg);
+  justify-content: flex-start; gap: .75rem;
+}
+.skill-icon-box {
+  width: 56px; height: 56px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1.25rem; flex-shrink: 0;
+}
+.skill-icon-box svg {
+  width: 26px; height: 26px;
+  color: var(--text); stroke-width: 1.5;
+}
+.skill-badge {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  font-size: .7rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text);
+  background: rgba(0,82,255,0.12);
+  border: 1px solid rgba(0,82,255,0.4);
+  border-radius: 8px; padding: .3rem .65rem;
+}
+.skill-card-title {
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--text); margin-bottom: .9rem;
+  font-family: var(--font-head);
+}
+.skill-card-divider {
+  height: 1px; background: rgba(255,255,255,0.08);
+  margin-bottom: .9rem;
+}
+.skill-card-desc {
+  font-size: .88rem; color: rgba(255,255,255,0.5);
+  line-height: 1.75; flex: 1; margin-bottom: 1.25rem;
+}
+.skill-tags {
+  display: flex; flex-wrap: wrap; gap: .45rem;
+}
+.skill-tag {
+  font-size: .75rem; font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 999px; padding: .28rem .7rem;
+}
+.skill-back-label {
+  font-size: .65rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--blue);
+}
+.skill-back-text {
+  font-size: .82rem; color: var(--text-sub); line-height: 1.72;
+}
+
 /* ======== WAT WIL IK ======== */
 .watwil-grid {
   display: grid;
@@ -860,8 +953,7 @@ footer {
 @media (max-width: 768px) {
   .section      { padding: 4rem 5vw; }
   .hero-name    { font-size: clamp(3.5rem, 16vw, 6rem); }
-  .drive-grid   { grid-template-columns: 1fr; }
-  .skill-row    { grid-template-columns: 1fr; gap: 1rem; }
+  .skill-card-grid { grid-template-columns: 1fr; }
   .nav-links    { display: none; }
   .nav-toggle   { display: flex; }
   .cta-block    { padding: 3rem 2rem; }
@@ -1267,71 +1359,121 @@ footer {
       <p class="section-sub">Bij TBWA\NEBOKO ontdekte ik dat presteren niet alleen over talent gaat — het vraagt systematisch werken, analyse en de bereidheid om te blijven verbeteren.</p>
     </div>
 
-    <!-- Drive cards -->
-    <div class="drive-grid reveal">
-      <div class="drive-card">
-        <div class="drive-num">01</div>
-        <div class="drive-title">Winnen &amp; presteren</div>
-        <div class="drive-desc">De drive om te winnen zit diep. Of het nu een wedstrijd, een analyse of een presentatie is — ik ga voor het beste resultaat.</div>
-      </div>
-      <div class="drive-card">
-        <div class="drive-num">02</div>
-        <div class="drive-title">Analytisch denken</div>
-        <div class="drive-desc">Ik hou van data die een verhaal vertelt. Ik zoom in op de details zonder het grotere plaatje uit het oog te verliezen.</div>
-      </div>
-      <div class="drive-card">
-        <div class="drive-num">03</div>
-        <div class="drive-title">Strategie &amp; impact</div>
-        <div class="drive-desc">Ik wil werk maken dat ergens voor staat. Campagnes die niet alleen opvallen, maar ook echt verschil maken voor een merk.</div>
-      </div>
-    </div>
+    <!-- CE-skill flip cards -->
+    <div class="skill-card-grid">
 
-    <!-- CE Skills -->
-    <div class="skills-list reveal">
-      <div class="skill-row">
-        <div>
-          <div class="skill-label-text">Kritisch denken</div>
-          <span class="skill-label-tag">CE-skill</span>
-        </div>
-        <div class="skill-content">
-          Voor McDonald's Nederland voerde ik maandelijks een concurrentieanalyse uit op zeven merken — waaronder Burger King, KFC en Domino's — verdeeld over kanalen als tv, radio, social media en digital. Na één uitleg pakte ik dit zelfstandig op. Ik stelde mezelf elke keer de vraag: <strong>wat is hier strategisch interessant aan en wat zegt dit over hun positionering?</strong> Mijn begeleider gaf aan dat mijn analyses consistent, goed onderbouwd en nauwelijks bij te sturen waren.
-          <br><br>
-          Een tweede voorbeeld is het marktonderzoek voor Mitsuba, dat ik samen met een collega-stagiair binnen één werkdag moest opleveren. De opdracht was open: "we need relevant information." Ik doorvroeg kritisch, bepaalde zelf de scope en maakte bewuste keuzes over wat wél en niet onderzocht werd.
-        </div>
-      </div>
-      <div class="skill-row">
-        <div>
-          <div class="skill-label-text">Samenwerken</div>
-          <span class="skill-label-tag">CE-skill</span>
-        </div>
-        <div class="skill-content">
-          Vrijwel al mijn projecten bij TBWA\NEBOKO voerde ik uit samen met Mick Beer, de andere strategie-stagiair. Ik merkte dat ik in het begin te veel op mijn eigen deel gefocust was — waardoor het grotere geheel eerst wat onoverzichtelijk bleef. Gaandeweg nam ik meer initiatief in het samenbrengen van onze analyses.
-          <br><br>
-          Dat marktonderzoek heeft mede bijgedragen aan het <strong>binnenhalen van Mitsuba als klant</strong>. Bij de concurrentieanalyse voor Odido stelde ik een duidelijke taakverdeling voor en zorgde ik dat onze bevindingen op elkaar aansloten. De klant reageerde met: "Enorme complimenten, dit is het beste overzicht dat ik in tijden heb gehad."
-        </div>
-      </div>
-      <div class="skill-row">
-        <div>
-          <div class="skill-label-text">Commercieel bewustzijn</div>
-          <span class="skill-label-tag">CE-skill</span>
-        </div>
-        <div class="skill-content">
-          Voor Save the Children selecteerde ik beeldmateriaal voor een tv-commercial, met als doel empathie op te wekken en donaties te genereren. Ik maakte bewuste keuzes op basis van emotionele impact én commercieel doel. <strong>Meerdere beelden uit mijn selectie zijn uiteindelijk gebruikt in de definitieve tv-commercial.</strong>
-          <br><br>
-          Ik leerde dat data verzamelen onvoldoende is — pas als je de analyse opbouwt vanuit de informatiebehoefte van de klant, ontstaat er echte strategische waarde.
+      <!-- Kritisch denken -->
+      <div class="skill-card reveal">
+        <div class="skill-card-inner">
+          <div class="skill-card-front">
+            <div class="skill-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+              </svg>
+            </div>
+            <span class="skill-badge">CE-skill</span>
+            <div class="skill-card-title">Kritisch denken</div>
+            <div class="skill-card-divider"></div>
+            <p class="skill-card-desc">Ik stel de juiste vragen en laat me niet leiden door de eerste conclusie. Ik zoom in op details zonder het grotere plaatje te verliezen.</p>
+            <div class="skill-tags">
+              <span class="skill-tag">Analyse</span>
+              <span class="skill-tag">Strategisch</span>
+              <span class="skill-tag">Onderzoek</span>
+            </div>
+          </div>
+          <div class="skill-card-back">
+            <span class="skill-back-label">Bewijs uit de praktijk</span>
+            <p class="skill-back-text">Voor McDonald's voerde ik maandelijks een concurrentieanalyse uit op zeven merken — waaronder Burger King en KFC. Na één uitleg pakte ik dit volledig zelfstandig op. Mijn begeleider gaf aan dat mijn analyses consistent, onderbouwd en nauwelijks bij te sturen waren.<br><br>Bij het marktonderzoek voor Mitsuba doorvroeg ik kritisch, bepaalde zelf de scope en maakte bewuste keuzes over wat wél en niet onderzocht werd — allemaal binnen één werkdag.</p>
+          </div>
         </div>
       </div>
-      <div class="skill-row">
-        <div>
-          <div class="skill-label-text">Aanpassings­vermogen</div>
-          <span class="skill-label-tag">CE-skill</span>
-        </div>
-        <div class="skill-content">
-          De concurrentieanalyse voor Save the Children kende geen vast eindontwerp bij de start. In vier opeenvolgende versies veranderde de scope telkens: van campagnegericht naar thematisch, van drie maanden naar een jaar, van descriptief naar strategisch verdiepend. Ik leerde om minder vast te houden aan de oorspronkelijke afbakening.
-          <br><br>
-          Een ander moment: het schrijven van klantcommunicatie voor McDonald's. Ik moest binnen <strong>een half uur</strong> een scherpe Engelstalige e-mail opstellen voor 42 ontvangers — inclusief de CMO van McDonald's Nederland. De feedback: mijn mails waren "zorgvuldig, strak en to the point."
+
+      <!-- Samenwerken -->
+      <div class="skill-card reveal">
+        <div class="skill-card-inner">
+          <div class="skill-card-front">
+            <div class="skill-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <span class="skill-badge">CE-skill</span>
+            <div class="skill-card-title">Samenwerken</div>
+            <div class="skill-card-divider"></div>
+            <p class="skill-card-desc">Ik werk graag samen en neem initiatief in het verbinden van ieders bijdrage tot een sterk, coherent geheel.</p>
+            <div class="skill-tags">
+              <span class="skill-tag">Teamwork</span>
+              <span class="skill-tag">Initiatief</span>
+              <span class="skill-tag">Afstemming</span>
+            </div>
+          </div>
+          <div class="skill-card-back">
+            <span class="skill-back-label">Bewijs uit de praktijk</span>
+            <p class="skill-back-text">Bij TBWA\NEBOKO werkte ik nauw samen met een andere stagiair. Gaandeweg nam ik meer initiatief in het verbinden van onze analyses. Bij de Odido-analyse stelde ik een duidelijke taakverdeling voor — de klant reageerde: <em>"Enorme complimenten, dit is het beste overzicht dat ik in tijden heb gehad."</em><br><br>Ons marktonderzoek heeft mede bijgedragen aan het binnenhalen van Mitsuba als klant.</p>
+          </div>
         </div>
       </div>
+
+      <!-- Commercieel bewustzijn -->
+      <div class="skill-card reveal">
+        <div class="skill-card-inner">
+          <div class="skill-card-front">
+            <div class="skill-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                <polyline points="16 7 22 7 22 13"/>
+              </svg>
+            </div>
+            <span class="skill-badge">CE-skill</span>
+            <div class="skill-card-title">Commercieel bewustzijn</div>
+            <div class="skill-card-divider"></div>
+            <p class="skill-card-desc">Ik denk mee vanuit het commerciële doel — niet alleen vanuit het creatieve of analytische proces. Resultaat telt.</p>
+            <div class="skill-tags">
+              <span class="skill-tag">Marketing</span>
+              <span class="skill-tag">Impact</span>
+              <span class="skill-tag">Doelgericht</span>
+            </div>
+          </div>
+          <div class="skill-card-back">
+            <span class="skill-back-label">Bewijs uit de praktijk</span>
+            <p class="skill-back-text">Voor Save the Children selecteerde ik beeldmateriaal voor een tv-commercial, gericht op empathie én donaties. <strong>Meerdere beelden uit mijn selectie zijn uiteindelijk gebruikt in de definitieve commercial.</strong><br><br>Ik leerde dat data verzamelen onvoldoende is — pas als je de analyse opbouwt vanuit de informatiebehoefte van de klant, ontstaat er echte strategische waarde.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aanpassingsvermogen -->
+      <div class="skill-card reveal">
+        <div class="skill-card-inner">
+          <div class="skill-card-front">
+            <div class="skill-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="17 1 21 5 17 9"/>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                <polyline points="7 23 3 19 7 15"/>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              </svg>
+            </div>
+            <span class="skill-badge">CE-skill</span>
+            <div class="skill-card-title">Aanpassingsvermogen</div>
+            <div class="skill-card-divider"></div>
+            <p class="skill-card-desc">Ik pas me snel aan wisselende omstandigheden aan en blijf effectief functioneren als de context verandert.</p>
+            <div class="skill-tags">
+              <span class="skill-tag">Flexibel</span>
+              <span class="skill-tag">Snel leren</span>
+              <span class="skill-tag">Veerkracht</span>
+            </div>
+          </div>
+          <div class="skill-card-back">
+            <span class="skill-back-label">Bewijs uit de praktijk</span>
+            <p class="skill-back-text">Bij Save the Children veranderde de scope van de analyse vier keer — van campagnegericht naar thematisch, van drie maanden naar een jaar. Ik leerde minder vast te houden aan de oorspronkelijke afbakening.<br><br>Bij McDonald's schreef ik binnen een half uur een scherpe Engelstalige e-mail voor 42 ontvangers — inclusief de CMO. De feedback: <em>"zorgvuldig, strak en to the point."</em></p>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>

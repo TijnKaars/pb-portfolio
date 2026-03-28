@@ -1237,19 +1237,32 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   border-radius: 28px; padding: 6rem 4rem;
   text-align: center; position: relative; overflow: hidden;
 }
+@keyframes ctaGlow1 {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  50%  { transform: translate(6%, 8%) scale(1.12); opacity: 0.75; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+@keyframes ctaGlow2 {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  50%  { transform: translate(-8%, -6%) scale(1.18); opacity: 0.65; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
 .cta-block::before {
   content: '';
   position: absolute; top: -20%; left: -10%;
   width: 80%; height: 110%;
   background: radial-gradient(ellipse at 30% 40%, rgba(0,60,255,0.55) 0%, rgba(0,30,180,0.25) 35%, transparent 70%);
   pointer-events: none;
+  animation: ctaGlow1 9s ease-in-out infinite;
 }
 .cta-block::after {
   content: '';
   position: absolute; bottom: -10%; right: -5%;
   width: 50%; height: 60%;
-  background: radial-gradient(ellipse, rgba(0,40,200,0.20) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(0,40,200,0.28) 0%, transparent 70%);
   pointer-events: none;
+  animation: ctaGlow2 7s ease-in-out infinite;
+  animation-delay: -3.5s;
 }
 .cta-block > * { position: relative; z-index: 1; }
 .cta-badge {

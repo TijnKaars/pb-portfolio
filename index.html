@@ -325,7 +325,12 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   opacity: 0;
   animation: slideUp .9s .4s cubic-bezier(.22,1,.36,1) both;
 }
-#globe-canvas { display: block; width: 400px; height: 400px; }
+#globe-canvas {
+  display: block; width: 100%; aspect-ratio: 1;
+  opacity: 0; transition: opacity 1s ease;
+  cursor: grab; touch-action: none;
+  border-radius: 50%;
+}
 .globe-city-label {
   position: absolute; top: 0; left: 0;
   display: flex; align-items: center; gap: 6px;
@@ -2123,166 +2128,61 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 </script>
 
-<!-- ======== 3D GLOBE (pure Canvas 2D — geen externe library) ======== -->
-<script>
+<!-- ======== 3D GLOBE (cobe WebGL via esm.sh) ======== -->
+<script type="module">
+import createGlobe from 'https://esm.sh/cobe@0.6.3';
+
 (function initGlobe() {
   const canvas = document.getElementById('globe-canvas');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
-  const S = 400; // logical size
-  canvas.width  = S * DPR;
-  canvas.height = S * DPR;
-  canvas.style.width  = S + 'px';
-  canvas.style.height = S + 'px';
-  ctx.scale(DPR, DPR);
 
-  const CX = S / 2, CY = S / 2, R = 155;
-
-  // Hide HTML labels (we draw them on canvas instead)
+  // Hide HTML labels (cobe renders markers natively)
   const lblAms = document.getElementById('globe-lbl-ams');
   const lblTky = document.getElementById('globe-lbl-tky');
   if (lblAms) lblAms.style.display = 'none';
   if (lblTky) lblTky.style.display = 'none';
 
-  // ── Maths ─────────────────────────────────────────────────
-  // lat/lon → unit 3D vector (Y-up, Z towards viewer at θ=0)
-  function ll3(lat, lon) {
-    const φ = lat * Math.PI / 180, λ = lon * Math.PI / 180;
-    return [Math.cos(φ) * Math.sin(λ), Math.sin(φ), Math.cos(φ) * Math.cos(λ)];
-  }
-  function rotY(p, θ) {
-    return [p[0]*Math.cos(θ) - p[2]*Math.sin(θ), p[1], p[0]*Math.sin(θ) + p[2]*Math.cos(θ)];
-  }
-  function proj(p) { return [CX + p[0]*R, CY - p[1]*R, p[2]]; } // [sx, sy, z]
+  let phi = 1.5;
+  let globe = null;
 
-  function slerp(a, b, t) {
-    const dot = Math.min(1, Math.max(-1, a[0]*b[0]+a[1]*b[1]+a[2]*b[2]));
-    const Ω = Math.acos(dot);
-    if (Ω < 1e-4) return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1]), a[2]+t*(b[2]-a[2])];
-    const s = Math.sin(Ω);
-    const sa = Math.sin((1-t)*Ω)/s, sb = Math.sin(t*Ω)/s;
-    return [a[0]*sa+b[0]*sb, a[1]*sa+b[1]*sb, a[2]*sa+b[2]*sb];
-  }
-
-  // ── Arc precomputation ────────────────────────────────────
-  const AMS = ll3(52.37,   4.90);
-  const TKY = ll3(35.68, 139.65);
-  const N = 120, ARC_H = 0.30;
-  const arcBase = Array.from({length: N+1}, (_, i) => {
-    const t = i / N;
-    const pt = slerp(AMS, TKY, t);
-    const h = 1 + Math.sin(t * Math.PI) * ARC_H;
-    return [pt[0]*h, pt[1]*h, pt[2]*h];
-  });
-
-  // ── Draw helpers ──────────────────────────────────────────
-  function drawGridLine(pts, α) {
-    ctx.beginPath();
-    let pen = false;
-    for (const p of pts) {
-      const [sx, sy, z] = proj(p);
-      if (z > 0) { pen ? ctx.lineTo(sx, sy) : ctx.moveTo(sx, sy); pen = true; }
-      else { pen = false; }
-    }
-    ctx.strokeStyle = `rgba(255,255,255,${α})`;
-    ctx.lineWidth = 0.6;
-    ctx.stroke();
+  function init() {
+    const width = canvas.offsetWidth || 400;
+    globe = createGlobe(canvas, {
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+      width,
+      height: width,
+      phi,
+      theta: 0.2,
+      dark: 1,
+      diffuse: 1.2,
+      mapSamples: 16000,
+      mapBrightness: 6,
+      baseColor: [0.18, 0.22, 0.45],
+      markerColor: [0.35, 0.55, 1.0],
+      glowColor: [0.25, 0.45, 1.0],
+      markers: [
+        { location: [52.37, 4.90],   size: 0.07 },
+        { location: [35.68, 139.65], size: 0.07 },
+      ],
+      onRender: (state) => {
+        state.phi = phi;
+        phi += 0.003;
+      }
+    });
+    setTimeout(() => { canvas.style.opacity = '1'; }, 100);
   }
 
-  function cityDot(lat, lon, θ, label, offX, offY) {
-    const p = proj(rotY(ll3(lat, lon), θ));
-    if (p[2] <= 0) return;
-    // Glow
-    const g = ctx.createRadialGradient(p[0],p[1],0, p[0],p[1],14);
-    g.addColorStop(0, 'rgba(255,255,255,0.45)');
-    g.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.beginPath(); ctx.arc(p[0],p[1],14,0,Math.PI*2);
-    ctx.fillStyle = g; ctx.fill();
-    // Dot
-    ctx.beginPath(); ctx.arc(p[0],p[1],4.5,0,Math.PI*2);
-    ctx.fillStyle = '#fff'; ctx.fill();
-    // Label
-    ctx.font = 'bold 9.5px DM Sans,sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.fillText(label.toUpperCase(), p[0]+offX, p[1]+offY);
+  if (canvas.offsetWidth > 0) {
+    init();
+  } else {
+    const ro = new ResizeObserver((entries) => {
+      if (entries[0]?.contentRect.width > 0) {
+        ro.disconnect();
+        init();
+      }
+    });
+    ro.observe(canvas);
   }
-
-  // ── Animation state ───────────────────────────────────────
-  // Start with both cities roughly centred
-  let θ = -(4.90 + 139.65) / 2 * Math.PI / 180;
-  let arcT = 0, pulse = 0;
-
-  function frame() {
-    ctx.clearRect(0, 0, S, S);
-
-    // Outer circle
-    ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI*2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = 1; ctx.stroke();
-
-    // Wireframe grid (lat + lon lines, only front side)
-    for (let lat = -75; lat <= 75; lat += 15) {
-      const pts = [];
-      for (let lon = -180; lon <= 180; lon += 3) pts.push(rotY(ll3(lat, lon), θ));
-      drawGridLine(pts, 0.13);
-    }
-    for (let lon = 0; lon < 360; lon += 20) {
-      const pts = [];
-      for (let lat = -90; lat <= 90; lat += 3) pts.push(rotY(ll3(lat, lon), θ));
-      drawGridLine(pts, 0.13);
-    }
-
-    // Dim full arc
-    ctx.beginPath();
-    let penDown = false;
-    for (let i = 0; i <= N; i++) {
-      const p = proj(rotY(arcBase[i], θ));
-      if (p[2] > -0.2) { penDown ? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1]); penDown = true; }
-      else penDown = false;
-    }
-    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
-    ctx.lineWidth = 1.5; ctx.stroke();
-
-    // Bright traveling dash (last 25 points before head)
-    const head = Math.floor(arcT * N);
-    const DASH = 25;
-    ctx.beginPath();
-    for (let i = DASH; i >= 0; i--) {
-      const idx = (head - i + N + 1) % (N + 1);
-      const p = proj(rotY(arcBase[idx], θ));
-      const alpha = 1 - i / DASH;
-      if (i === DASH) ctx.moveTo(p[0], p[1]);
-      else ctx.lineTo(p[0], p[1]);
-    }
-    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-    ctx.lineWidth = 2.2; ctx.stroke();
-
-    // Moving dot at head
-    const headPt = proj(rotY(arcBase[head], θ));
-    if (headPt[2] > -0.2) {
-      const g2 = ctx.createRadialGradient(headPt[0],headPt[1],0, headPt[0],headPt[1],16);
-      g2.addColorStop(0, 'rgba(255,255,255,0.7)');
-      g2.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.beginPath(); ctx.arc(headPt[0],headPt[1],16,0,Math.PI*2);
-      ctx.fillStyle = g2; ctx.fill();
-      ctx.beginPath(); ctx.arc(headPt[0],headPt[1],5,0,Math.PI*2);
-      ctx.fillStyle = '#fff'; ctx.fill();
-    }
-
-    // City labels
-    cityDot(52.37,   4.90, θ, 'Amsterdam',  9, -10);
-    cityDot(35.68, 139.65, θ, 'Tokyo',       9, -10);
-
-    // Animate
-    θ     += 0.0014;
-    arcT   = (arcT + 0.0025) % 1;
-    pulse += 0.02;
-
-    requestAnimationFrame(frame);
-  }
-
-  frame();
 })();
 </script>
 </body>

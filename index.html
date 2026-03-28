@@ -1051,50 +1051,110 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   background: linear-gradient(to bottom, rgba(0,82,255,0.06), transparent 50%, rgba(0,82,255,0.04));
 }
 
-/* ======== WAT WIL IK ======== */
-.watwil-grid {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 5rem; align-items: start;
+/* ======== WAT WIL IK — TIMELINE ======== */
+.timeline { position: relative; max-width: 860px; margin: 0 auto; --timeline-progress: 0; }
+.timeline::after {
+  content: ''; position: absolute; top: 0; left: 28px;
+  width: 2px; height: 100%;
+  background: rgba(255,255,255,0.07); z-index: 0;
 }
-.watwil-block { margin-bottom: 2.5rem; }
-.watwil-block h3 {
-  font-size: 1.05rem; font-weight: 700;
-  color: var(--text); margin-bottom: .9rem;
+.timeline::before {
+  content: ''; position: absolute; top: 0; left: 28px;
+  width: 2px; height: 100%;
+  background: linear-gradient(to bottom, var(--blue), rgba(0,82,255,0.15));
+  transform-origin: top center;
+  transform: scaleY(var(--timeline-progress));
+  transition: transform 0.08s linear;
+  z-index: 1;
 }
-.watwil-block p {
-  font-size: .92rem; color: var(--text-sub);
-  line-height: 1.8; margin-bottom: 1rem;
+.timeline-item {
+  position: relative; display: grid;
+  grid-template-columns: 56px 1fr; gap: 1.5rem;
+  padding-bottom: 3.5rem; align-items: start;
 }
-.watwil-block p em { color: var(--text); font-style: italic; }
-
-.expect-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px; padding: 2rem;
-  position: sticky; top: 96px;
+.timeline-item:last-of-type { padding-bottom: 0; }
+.timeline-dot {
+  position: relative; z-index: 2; justify-self: center;
+  width: 14px; height: 14px; border-radius: 50%; margin-top: .35rem; flex-shrink: 0;
+  background: var(--bg); border: 2px solid var(--blue);
+  box-shadow: 0 0 0 4px rgba(0,82,255,0.15), 0 0 14px rgba(0,82,255,0.4);
+  transition: background .3s, box-shadow .3s;
 }
-.expect-box-label {
-  font-size: .7rem; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--text-sub); margin-bottom: 1.5rem; display: block;
+.timeline-item:hover .timeline-dot {
+  background: var(--blue);
+  box-shadow: 0 0 0 6px rgba(0,82,255,0.2), 0 0 22px rgba(0,82,255,0.6);
 }
-.expect-list { list-style: none; }
-.expect-list li {
-  font-size: .88rem; color: var(--text-sub);
-  padding: .6rem 0; border-top: 1px solid var(--border);
-  display: flex; gap: .75rem; align-items: flex-start;
-  opacity: 0; transform: translateX(-10px);
-  transition: opacity .4s ease, transform .4s ease;
+.timeline-card {
+  background: rgba(8,12,28,0.85); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 1.5rem 1.75rem;
+  position: relative; overflow: hidden;
+  transition: border-color .25s, transform .25s, box-shadow .25s;
 }
-.expect-list li::before { content: '→'; color: var(--blue); font-weight: 700; flex-shrink: 0; }
-.reveal.in .expect-list li:nth-child(1) { opacity:1; transform:none; transition-delay:.15s; }
-.reveal.in .expect-list li:nth-child(2) { opacity:1; transform:none; transition-delay:.22s; }
-.reveal.in .expect-list li:nth-child(3) { opacity:1; transform:none; transition-delay:.29s; }
-.reveal.in .expect-list li:nth-child(4) { opacity:1; transform:none; transition-delay:.36s; }
-.reveal.in .expect-list li:nth-child(5) { opacity:1; transform:none; transition-delay:.43s; }
-.reveal.in .expect-list li:nth-child(6) { opacity:1; transform:none; transition-delay:.50s; }
-.reveal.in .expect-list li:nth-child(7) { opacity:1; transform:none; transition-delay:.57s; }
+.timeline-card::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 65%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,82,255,0.9), transparent);
+  box-shadow: 0 0 28px 8px rgba(0,82,255,0.3); pointer-events: none;
+}
+.timeline-card:hover {
+  border-color: rgba(0,82,255,0.28); transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,82,255,0.12);
+}
+.timeline-date {
+  display: inline-flex; align-items: center; gap: .45rem;
+  font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--blue); margin-bottom: .75rem;
+}
+.timeline-date svg { width: 13px; height: 13px; opacity: .8; flex-shrink: 0; }
+.timeline-title {
+  font-size: 1.05rem; font-weight: 700; color: var(--text);
+  margin-bottom: .55rem; display: flex; align-items: center; gap: .65rem;
+}
+.timeline-title svg { width: 20px; height: 20px; color: var(--blue); flex-shrink: 0; }
+.timeline-desc { font-size: .88rem; color: var(--text-sub); line-height: 1.78; }
+.timeline-vision-label {
+  display: block; font-size: .72rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--blue); margin: 1.25rem 0 1rem;
+}
+.vision-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.vision-card {
+  background: rgba(8,12,28,0.85); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 1.4rem 1.5rem;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: .6rem;
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .5s ease, transform .5s ease, border-color .25s, box-shadow .25s;
+}
+.vision-card::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 50%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,82,255,0.7), transparent);
+  pointer-events: none;
+}
+.vision-card:hover { border-color: rgba(0,82,255,0.28); transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,82,255,0.10); }
+.vision-grid.reveal.in .vision-card:nth-child(1) { opacity:1; transform:none; transition-delay:.08s; }
+.vision-grid.reveal.in .vision-card:nth-child(2) { opacity:1; transform:none; transition-delay:.18s; }
+.vision-grid.reveal.in .vision-card:nth-child(3) { opacity:1; transform:none; transition-delay:.28s; }
+.vision-grid.reveal.in .vision-card:nth-child(4) { opacity:1; transform:none; transition-delay:.38s; }
+.vision-card-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  background: rgba(0,50,160,0.25); border: 1px solid rgba(0,100,255,0.30);
+  display: flex; align-items: center; justify-content: center;
+}
+.vision-card-icon svg { width: 18px; height: 18px; stroke-width: 1.5; color: var(--text); }
+.vision-card-title { font-size: .9rem; font-weight: 700; color: var(--text); }
+.vision-card-desc { font-size: .82rem; color: var(--text-sub); line-height: 1.65; }
+@media (max-width: 1024px) { .timeline { max-width: 100%; } }
+@media (max-width: 768px) {
+  .timeline-item { grid-template-columns: 40px 1fr; gap: 1rem; }
+  .timeline::before, .timeline::after { left: 20px; }
+  .vision-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .timeline-item { grid-template-columns: 32px 1fr; gap: .75rem; }
+  .timeline::before, .timeline::after { left: 15px; }
+}
 
 /* ======== CONTACT ======== */
 .cta-block {
@@ -1960,24 +2020,133 @@ footer {
       </h2>
     </div>
 
-    <div class="watwil-grid">
-      <div>
-        <div class="watwil-block reveal">
-          <h3>Uitdagingen &amp; inzichten</h3>
-          <p>TBWA\NEBOKO is een indrukwekkend bureau. Groot, professioneel en vol talent. En juist dat maakte het ook soms lastig. Na de eerste maanden begon ik te merken dat de opdrachten die ik uitvoerde een vast patroon kregen. <strong>Maar daarmee verdween ook de uitdaging.</strong></p>
-          <p>Ik ben iemand die energie haalt uit nieuwe situaties, scherp nadenken en het gevoel dat ik ergens beter in word. Dat was een eerlijke ontdekking: ik heb variatie en groei nodig om op mijn best te zijn.</p>
+    <div class="timeline" id="watwil-timeline">
+
+      <!-- 1. September 2026 — Tokio -->
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-date">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            September 2026
+          </span>
+          <h3 class="timeline-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Semester Abroad — Tokio, Japan
+          </h3>
+          <p class="timeline-desc">Een bewuste stap buiten mijn comfortzone. In Japan doe ik internationale ervaring op in een cultuur die wereldwijd toonaangevend is op het gebied van productdesign, consumentenervaring en innovatie — precies de omgeving die mij inspireert om groter te denken.</p>
         </div>
-        <div class="watwil-block reveal">
-          <h3>Van groot bureau naar eigen koers</h3>
-          <p>De stage leerde me niet alleen wat ik kan, maar ook wat ik wil — en wat niet. Een groot bureau als TBWA is bijzonder om stage te lopen, maar als eindbestemming past het niet bij mij. <strong>Ik wil niet voor merken werken — ik wil zelf een merk zijn.</strong></p>
-          <p>Mijn uiteindelijke doel is het opbouwen van een eigen e-commerce bedrijf. Geen kledingmerk of lifestylelabel, maar een merk met een echte functie — producten die mensen concreet verder helpen in hun persoonlijke ontwikkeling. Wat dat precies wordt, weet ik nog niet. Maar de richting is helder: iets bouwen dat mensen functioneel sterker maakt.</p>
-          <p>Die ambitie komt voort uit drie dingen die mij al jaren fascineren: <strong>consumentengedrag en psychologie</strong>, <strong>technologie en AI</strong>, en de kracht van een sterk merk. Marketing is voor mij geen eindbestemming — het is het fundament waarop ik iets eigens ga bouwen.</p>
+      </div>
+
+      <!-- 2. Zomer 2027 — Afstuderen -->
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-date">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Zomer 2027
+          </span>
+          <h3 class="timeline-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            Afstuderen Commerciële Economie — HvA
+          </h3>
+          <p class="timeline-desc">Afsluiting van mijn bachelor CE (Digital Marketing) aan de Hogeschool van Amsterdam. Het fundament: consumentengedrag, strategie en digitale marketing — de gereedschapskist voor alles wat volgt.</p>
         </div>
-        <div class="watwil-block reveal">
-          <h3>Stap voor stap — ook Tokio</h3>
-          <p>Eerst ga ik verder leren. Vanaf <strong>september 2026 studeer ik een semester in Tokio</strong>, Japan — een bewuste keuze om mezelf buiten mijn comfortzone te plaatsen, internationaal te denken en nieuwe perspectieven op te doen. Japan staat bekend om zijn unieke kijk op productdesign, consumentenervaring en innovatie. Precies de omgeving die mij inspireert.</p>
-          <p>Dat ik op de goede weg zit, blijkt uit de feedback die ik meekreeg van de strategieafdeling. Wendeline Sassen, Strategy Director bij TBWA\NEBOKO, schreef dat ik een van de beste stagiairs was die ze ooit hadden gehad — proactief, inhoudelijk sterk en professioneel. Dat geeft vertrouwen.</p>
-          <p>Ik wil doorgroeien in een omgeving waar ik breed inzetbaar ben, snel leer en echt impact kan maken. <em>Niet de grootste organisatie, maar de juiste.</em></p>
+      </div>
+
+      <!-- 3. 2027–2028 — Pre-master -->
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-date">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            2027 – 2028
+          </span>
+          <h3 class="timeline-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Pre-master
+          </h3>
+          <p class="timeline-desc">Schakel naar universitair niveau. De pre-master is de brug tussen HBO en een research-gedreven masterprogramma — scherper denken, dieper duiken, een solide wetenschappelijk kader opbouwen.</p>
+        </div>
+      </div>
+
+      <!-- 4. September 2028 — Start Master -->
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-date">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            September 2028
+          </span>
+          <h3 class="timeline-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Start Master
+          </h3>
+          <p class="timeline-desc">Volledige verdieping op academisch niveau. Marketing, strategie of een overlap met gedragseconomie — de exacte richting wordt scherper naarmate ik meer ervaring opdoe. De drive is helder: begrijpen wat mensen beweegt om te kopen, te kiezen en te vertrouwen.</p>
+        </div>
+      </div>
+
+      <!-- 5. ~2030 — Na de master -->
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-date">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ~2030
+          </span>
+          <h3 class="timeline-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Na de master: tussenjaar of werk
+          </h3>
+          <p class="timeline-desc">Na het afstuderen bewust de tijd nemen — een tussenjaar om internationaal te werken, ideeën te testen of de eerste stappen te zetten richting een eigen onderneming. <em>Niet de grootste organisatie zoeken, maar de juiste.</em></p>
+        </div>
+      </div>
+
+      <!-- 6. 2026–2036 — Tien jaar visie -->
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <span class="timeline-date">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            2026 – 2036
+          </span>
+          <h3 class="timeline-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Tien jaar visie
+          </h3>
+          <p class="timeline-desc">De komende tien jaar bouwen aan iets eigens. Geen kledingmerk of lifestylelabel — maar een e-commerce merk met een echte functie. Producten die mensen concreet verder helpen in hun persoonlijke ontwikkeling.</p>
+
+          <span class="timeline-vision-label">Vier pijlers</span>
+          <div class="vision-grid reveal">
+            <div class="vision-card">
+              <div class="vision-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              </div>
+              <div class="vision-card-title">E-commerce merk</div>
+              <p class="vision-card-desc">Niet werken voor merken van anderen — zelf een merk bouwen. Producten die mensen functioneel sterker maken.</p>
+            </div>
+            <div class="vision-card">
+              <div class="vision-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
+              </div>
+              <div class="vision-card-title">AI &amp; technologie</div>
+              <p class="vision-card-desc">AI inzetten als hefboom — niet als hype. Slimme systemen die marketing, product en klantbegrip versnellen.</p>
+            </div>
+            <div class="vision-card">
+              <div class="vision-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div class="vision-card-title">Consumentenpsychologie</div>
+              <p class="vision-card-desc">Begrijpen wat mensen drijft: keuzegedrag, vertrouwen, gewoontevorming. De basis van elk sterk merk.</p>
+            </div>
+            <div class="vision-card">
+              <div class="vision-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+              </div>
+              <div class="vision-card-title">Groei &amp; schalen</div>
+              <p class="vision-card-desc">Van eerste verkoop naar duurzame groei. Stap voor stap, data-gedreven — met de lange termijn als leidraad.</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2111,6 +2280,21 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { rootMargin: '0px 0px -40px 0px', threshold: 0.07 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ======== TIMELINE SCROLL-DRIVEN LINE ========
+(function () {
+  const tl = document.getElementById('watwil-timeline');
+  if (!tl) return;
+  function updateLine() {
+    const rect = tl.getBoundingClientRect();
+    const scrolled = Math.max(0, window.innerHeight - rect.top);
+    const progress = Math.min(1, scrolled / (rect.height + window.innerHeight * 0.5));
+    tl.style.setProperty('--timeline-progress', progress);
+  }
+  window.addEventListener('scroll', updateLine, { passive: true });
+  window.addEventListener('resize', updateLine, { passive: true });
+  updateLine();
+})();
 
 
 // ======== MAGNETIC CTA ========

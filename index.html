@@ -123,7 +123,7 @@ strong { color: var(--text); font-weight: 600; }
   font-weight: 700; line-height: 1.1;
   letter-spacing: -0.02em; margin-bottom: 1.2rem;
 }
-.title-dim   { color: var(--text-sub); }
+.title-dim   { color: var(--text); }
 .title-bright { color: var(--text); }
 .serif { font-family: 'Instrument Serif', serif; font-weight: 400; font-style: italic; }
 .section-sub {
@@ -919,7 +919,7 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   font-weight: 700; line-height: 1.15;
   color: var(--text); margin-bottom: 1rem;
 }
-.cases-title span { color: var(--text-sub); }
+.cases-title span { color: var(--text); }
 .cases-sub {
   font-size: .95rem; color: var(--text-sub);
   line-height: 1.75; max-width: 480px; margin: 0 auto;
@@ -1056,7 +1056,7 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 }
 
 /* ======== WAT WIL IK — TIMELINE ======== */
-.timeline { position: relative; max-width: 760px; --timeline-progress: 0; }
+.timeline { position: relative; max-width: 100%; --timeline-progress: 0; }
 .timeline::after {
   content: ''; position: absolute; top: 0; left: 28px;
   width: 2px; height: 100%;
@@ -1090,9 +1090,13 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 }
 .timeline-card {
   background: rgba(8,12,28,0.85); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px; padding: 1.5rem 1.75rem;
+  border-radius: 16px;
   position: relative; overflow: hidden;
   transition: border-color .25s, transform .25s, box-shadow .25s;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 0;
+  min-height: 200px;
 }
 .timeline-card::before {
   content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
@@ -1103,6 +1107,36 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 .timeline-card:hover {
   border-color: rgba(0,82,255,0.28); transform: translateY(-3px);
   box-shadow: 0 8px 28px rgba(0,82,255,0.12);
+}
+/* Text content inside card */
+.timeline-card-body {
+  padding: 1.5rem 1.75rem;
+  display: flex; flex-direction: column; justify-content: center;
+}
+/* Photo placeholder */
+.timeline-card-photo {
+  border-left: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.025);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: .75rem;
+  position: relative; overflow: hidden;
+}
+.timeline-card-photo::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(0,60,200,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.timeline-card-photo svg {
+  width: 32px; height: 32px;
+  color: rgba(255,255,255,0.18); stroke-width: 1;
+  position: relative; z-index: 1;
+}
+.timeline-card-photo span {
+  font-size: .65rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.2);
+  position: relative; z-index: 1;
 }
 .timeline-date {
   display: inline-flex; align-items: center; gap: .45rem;
@@ -1149,8 +1183,9 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
 .vision-card-icon svg { width: 18px; height: 18px; stroke-width: 1.5; color: var(--text); }
 .vision-card-title { font-size: .9rem; font-weight: 700; color: var(--text); }
 .vision-card-desc { font-size: .82rem; color: var(--text-sub); line-height: 1.65; }
-@media (max-width: 1024px) { .timeline { max-width: 100%; } }
 @media (max-width: 768px) {
+  .timeline-card { grid-template-columns: 1fr; min-height: auto; }
+  .timeline-card-photo { display: none; }
   .timeline-item { grid-template-columns: 40px 1fr; gap: 1rem; }
   .timeline::before, .timeline::after { left: 20px; }
   .vision-grid { grid-template-columns: 1fr; }
@@ -1212,7 +1247,7 @@ nav.scrolled { border-bottom-color: rgba(0,82,255,.2); }
   font-weight: 800; letter-spacing: -0.03em;
   color: var(--text); margin-bottom: 1rem; line-height: 1.1;
 }
-.cta-h2-dim { color: rgba(255,255,255,0.4); display: block; }
+.cta-h2-dim { color: var(--text); display: block; }
 .cta-block p {
   font-size: .95rem; color: rgba(255,255,255,0.5);
   line-height: 1.75; max-width: 440px;
@@ -1643,7 +1678,7 @@ footer {
     <div class="cases-heading-wrap reveal">
       <div class="cases-heading-inner">
         <span class="cases-sup">Persoonlijkheid & karakter</span>
-        <h3 class="cases-title"><span class="serif">De Commandant</span> —<br><span>wat de test over mij zegt.</span></h3>
+        <h3 class="cases-title"><span class="serif">De Commandant</span><br><span>wat de test over mij zegt.</span></h3>
         <p class="cases-sub">Volgens 16Personalities ben ik een ENTJ-A: gedurfd, rationeel en doelgericht. Hieronder de test in cijfers — en de mensen thuis die bevestigen of het klopt.</p>
       </div>
     </div>
@@ -1779,7 +1814,7 @@ footer {
       <div class="cases-heading-inner">
         <span class="cases-sup">Testimonials</span>
         <h3 class="cases-title"><span class="serif">Wat anderen</span><br><span>over mij zeggen.</span></h3>
-        <p class="cases-sub">Mensen waarmee ik heb samengewerkt — op stage, in de collegebanken en op het veld.</p>
+        <p class="cases-sub">Mensen waarmee ik heb samengewerkt — op stage en in de collegebanken.</p>
       </div>
     </div>
 
@@ -2107,15 +2142,21 @@ footer {
       <div class="timeline-item reveal">
         <div class="timeline-dot"></div>
         <div class="timeline-card">
-          <span class="timeline-date">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            September 2026
-          </span>
-          <h3 class="timeline-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            Semester Abroad — Tokio, Japan
-          </h3>
-          <p class="timeline-desc">Een bewuste stap buiten mijn comfortzone. In Japan doe ik internationale ervaring op in een cultuur die wereldwijd toonaangevend is op het gebied van productdesign, consumentenervaring en innovatie — precies de omgeving die mij inspireert om groter te denken.</p>
+          <div class="timeline-card-body">
+            <span class="timeline-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              September 2026
+            </span>
+            <h3 class="timeline-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Semester Abroad — Tokio, Japan
+            </h3>
+            <p class="timeline-desc">Een bewuste stap buiten mijn comfortzone. In Japan doe ik internationale ervaring op in een cultuur die wereldwijd toonaangevend is op het gebied van productdesign, consumentenervaring en innovatie — precies de omgeving die mij inspireert om groter te denken.</p>
+          </div>
+          <div class="timeline-card-photo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Foto volgt</span>
+          </div>
         </div>
       </div>
 
@@ -2123,15 +2164,21 @@ footer {
       <div class="timeline-item reveal">
         <div class="timeline-dot"></div>
         <div class="timeline-card">
-          <span class="timeline-date">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Zomer 2027
-          </span>
-          <h3 class="timeline-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-            Afstuderen Commerciële Economie — HvA
-          </h3>
-          <p class="timeline-desc">Afsluiting van mijn bachelor CE (Digital Marketing) aan de Hogeschool van Amsterdam. Het fundament: consumentengedrag, strategie en digitale marketing — de gereedschapskist voor alles wat volgt.</p>
+          <div class="timeline-card-body">
+            <span class="timeline-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Zomer 2027
+            </span>
+            <h3 class="timeline-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Afstuderen Commerciële Economie — HvA
+            </h3>
+            <p class="timeline-desc">Afsluiting van mijn bachelor CE (Digital Marketing) aan de Hogeschool van Amsterdam. Het fundament: consumentengedrag, strategie en digitale marketing — de gereedschapskist voor alles wat volgt.</p>
+          </div>
+          <div class="timeline-card-photo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Foto volgt</span>
+          </div>
         </div>
       </div>
 
@@ -2139,15 +2186,21 @@ footer {
       <div class="timeline-item reveal">
         <div class="timeline-dot"></div>
         <div class="timeline-card">
-          <span class="timeline-date">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            2027 – 2028
-          </span>
-          <h3 class="timeline-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            Pre-master
-          </h3>
-          <p class="timeline-desc">Schakel naar universitair niveau. De pre-master is de brug tussen HBO en een research-gedreven masterprogramma — scherper denken, dieper duiken, een solide wetenschappelijk kader opbouwen.</p>
+          <div class="timeline-card-body">
+            <span class="timeline-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              2027 – 2028
+            </span>
+            <h3 class="timeline-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              Pre-master
+            </h3>
+            <p class="timeline-desc">Schakel naar universitair niveau. De pre-master is de brug tussen HBO en een research-gedreven masterprogramma — scherper denken, dieper duiken, een solide wetenschappelijk kader opbouwen.</p>
+          </div>
+          <div class="timeline-card-photo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Foto volgt</span>
+          </div>
         </div>
       </div>
 
@@ -2155,15 +2208,21 @@ footer {
       <div class="timeline-item reveal">
         <div class="timeline-dot"></div>
         <div class="timeline-card">
-          <span class="timeline-date">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            September 2028
-          </span>
-          <h3 class="timeline-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
-            Start Master
-          </h3>
-          <p class="timeline-desc">Volledige verdieping op academisch niveau. Marketing, strategie of een overlap met gedragseconomie — de exacte richting wordt scherper naarmate ik meer ervaring opdoe. De drive is helder: begrijpen wat mensen beweegt om te kopen, te kiezen en te vertrouwen.</p>
+          <div class="timeline-card-body">
+            <span class="timeline-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              September 2028
+            </span>
+            <h3 class="timeline-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+              Start Master
+            </h3>
+            <p class="timeline-desc">Volledige verdieping op academisch niveau. Marketing, strategie of een overlap met gedragseconomie — de exacte richting wordt scherper naarmate ik meer ervaring opdoe. De drive is helder: begrijpen wat mensen beweegt om te kopen, te kiezen en te vertrouwen.</p>
+          </div>
+          <div class="timeline-card-photo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Foto volgt</span>
+          </div>
         </div>
       </div>
 
@@ -2171,15 +2230,21 @@ footer {
       <div class="timeline-item reveal">
         <div class="timeline-dot"></div>
         <div class="timeline-card">
-          <span class="timeline-date">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            ~2030
-          </span>
-          <h3 class="timeline-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Na de master: tussenjaar of werk
-          </h3>
-          <p class="timeline-desc">Na het afstuderen bewust kiezen. Ofwel een tussenjaar om de wereld te zien — reizen puur voor de ervaring, met als doel breed te blijven denken. Ofwel direct aan de slag bij een e-commerce bedrijf: de kneepjes van het vak leren terwijl ik betaald krijg, als voorbereiding op het opzetten van mijn eigen merk.</p>
+          <div class="timeline-card-body">
+            <span class="timeline-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              ~2030
+            </span>
+            <h3 class="timeline-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Na de master: tussenjaar of werk
+            </h3>
+            <p class="timeline-desc">Na het afstuderen bewust kiezen. Ofwel een tussenjaar om de wereld te zien — reizen puur voor de ervaring, met als doel breed te blijven denken. Ofwel direct aan de slag bij een e-commerce bedrijf: de kneepjes van het vak leren terwijl ik betaald krijg, als voorbereiding op het opzetten van mijn eigen merk.</p>
+          </div>
+          <div class="timeline-card-photo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Foto volgt</span>
+          </div>
         </div>
       </div>
 
@@ -2187,17 +2252,18 @@ footer {
       <div class="timeline-item reveal">
         <div class="timeline-dot"></div>
         <div class="timeline-card">
-          <span class="timeline-date">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            2026 – 2036
-          </span>
-          <h3 class="timeline-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            Tien jaar visie
-          </h3>
-          <p class="timeline-desc">De komende tien jaar bouwen aan iets eigens. Geen kledingmerk of lifestylelabel — maar een e-commerce merk met een echte functie. Producten die mensen concreet verder helpen in hun persoonlijke ontwikkeling.</p>
+          <div class="timeline-card-body">
+            <span class="timeline-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              2026 – 2036
+            </span>
+            <h3 class="timeline-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Tien jaar visie
+            </h3>
+            <p class="timeline-desc">De komende tien jaar bouwen aan iets eigens. Geen kledingmerk of lifestylelabel — maar een e-commerce merk met een echte functie. Producten die mensen concreet verder helpen in hun persoonlijke ontwikkeling.</p>
 
-          <span class="timeline-vision-label">Vier pijlers</span>
+            <span class="timeline-vision-label">Vier pijlers</span>
           <div class="vision-grid reveal">
             <div class="vision-card">
               <div class="vision-card-icon">
@@ -2227,6 +2293,10 @@ footer {
               <div class="vision-card-title">Groei &amp; schalen</div>
               <p class="vision-card-desc">Van eerste verkoop naar duurzame groei. Stap voor stap, data-gedreven — met de lange termijn als leidraad.</p>
             </div>
+          </div>
+          <div class="timeline-card-photo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Foto volgt</span>
           </div>
         </div>
       </div>
